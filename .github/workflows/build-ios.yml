@@ -25,6 +25,38 @@ jobs:
       - name: Select Xcode
         run: sudo xcode-select -s /Applications/Xcode_16.0.app
 
+      - name: Generate App Icon
+        run: |
+          pip3 install pillow
+          python3 << 'EOF'
+          from PIL import Image, ImageDraw
+
+          # Create 1024x1024 icon with TechniLux teal color
+          size = 1024
+          img = Image.new('RGB', (size, size), '#1d6a64')
+          draw = ImageDraw.Draw(img)
+
+          # Add a simple "T" letter in white
+          from PIL import ImageFont
+          try:
+              # Try system font
+              font = ImageFont.truetype('/System/Library/Fonts/Helvetica.ttc', 600)
+          except:
+              font = ImageFont.load_default()
+
+          # Center the text
+          text = "T"
+          bbox = draw.textbbox((0, 0), text, font=font)
+          text_width = bbox[2] - bbox[0]
+          text_height = bbox[3] - bbox[1]
+          x = (size - text_width) // 2
+          y = (size - text_height) // 2 - 50
+          draw.text((x, y), text, fill='white', font=font)
+
+          img.save('TechniLux/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png')
+          print('Generated 1024x1024 app icon')
+          EOF
+
       - name: Get version
         id: version
         run: |
@@ -100,6 +132,33 @@ jobs:
 
       - name: Select Xcode
         run: sudo xcode-select -s /Applications/Xcode_16.0.app
+
+      - name: Generate App Icon
+        run: |
+          pip3 install pillow
+          python3 << 'EOF'
+          from PIL import Image, ImageDraw
+
+          size = 1024
+          img = Image.new('RGB', (size, size), '#1d6a64')
+          draw = ImageDraw.Draw(img)
+
+          from PIL import ImageFont
+          try:
+              font = ImageFont.truetype('/System/Library/Fonts/Helvetica.ttc', 600)
+          except:
+              font = ImageFont.load_default()
+
+          text = "T"
+          bbox = draw.textbbox((0, 0), text, font=font)
+          text_width = bbox[2] - bbox[0]
+          text_height = bbox[3] - bbox[1]
+          x = (size - text_width) // 2
+          y = (size - text_height) // 2 - 50
+          draw.text((x, y), text, fill='white', font=font)
+
+          img.save('TechniLux/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png')
+          EOF
 
       - name: Run tests
         run: |
