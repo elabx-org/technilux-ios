@@ -18,7 +18,7 @@ final class CacheViewModel {
 
         do {
             let response = try await client.listCachedZones(domain: currentPath, node: cluster.nodeParam)
-            zones = response.zones
+            zones = response.zonesList
         } catch {
             self.error = error.localizedDescription
         }
@@ -81,17 +81,37 @@ struct CacheView: View {
                     pathBreadcrumb
                 }
 
+                // Error display
+                if let error = viewModel.error {
+                    HStack {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .foregroundStyle(.red)
+                        Text(error)
+                            .font(.subheadline)
+                        Spacer()
+                        Button("Retry") {
+                            Task { await viewModel.loadCache() }
+                        }
+                        .font(.subheadline)
+                    }
+                    .padding()
+                    .background(Color.red.opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .padding(.horizontal)
+                }
+
                 // Cache list
                 if viewModel.isLoading && viewModel.zones.isEmpty {
                     ProgressView("Loading cache...")
                         .frame(maxHeight: .infinity)
-                } else if viewModel.zones.isEmpty {
+                } else if viewModel.zones.isEmpty && viewModel.error == nil {
                     EmptyStateView(
                         icon: "memorychip",
                         title: "Cache Empty",
                         description: "No cached entries found"
                     )
-                } else {
+                    .frame(maxHeight: .infinity)
+                } else if !viewModel.zones.isEmpty {
                     List(viewModel.zones) { zone in
                         Button {
                             Task { await viewModel.navigateTo(zone.zone) }

@@ -99,7 +99,7 @@ final class LogsViewModel {
     func loadLogFiles() async {
         do {
             let response = try await client.listLogFiles(node: cluster.nodeParam)
-            logFiles = response.logFiles
+            logFiles = response.filesList
         } catch {
             self.error = error.localizedDescription
         }
@@ -477,26 +477,48 @@ struct LogFiltersSheet: View {
 struct LogFilesSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Bindable var viewModel: LogsViewModel
+    @State private var isLoading = true
 
     var body: some View {
         NavigationStack {
-            List(viewModel.logFiles) { file in
-                HStack {
-                    VStack(alignment: .leading) {
-                        Text(file.fileName)
-                            .font(.subheadline)
-                        Text(formatSize(file.size))
-                            .font(.caption)
+            Group {
+                if isLoading {
+                    ProgressView("Loading log files...")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else if viewModel.logFiles.isEmpty {
+                    VStack(spacing: 12) {
+                        Image(systemName: "doc.text")
+                            .font(.system(size: 40))
                             .foregroundStyle(.secondary)
+                        Text("No Log Files")
+                            .font(.headline)
+                        Text("Log files will appear here when logging is enabled")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
                     }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding()
+                } else {
+                    List(viewModel.logFiles) { file in
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text(file.fileName)
+                                    .font(.subheadline)
+                                Text(formatSize(file.size))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
 
-                    Spacer()
-                }
-                .swipeActions {
-                    Button(role: .destructive) {
-                        Task { await viewModel.deleteLogFile(file) }
-                    } label: {
-                        Label("Delete", systemImage: "trash")
+                            Spacer()
+                        }
+                        .swipeActions {
+                            Button(role: .destructive) {
+                                Task { await viewModel.deleteLogFile(file) }
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
                     }
                 }
             }
@@ -509,6 +531,7 @@ struct LogFilesSheet: View {
             }
             .task {
                 await viewModel.loadLogFiles()
+                isLoading = false
             }
         }
     }

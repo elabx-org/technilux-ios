@@ -13,9 +13,11 @@ struct AboutView: View {
                 // App info
                 Section {
                     VStack(spacing: 16) {
-                        Image(systemName: "server.rack")
-                            .font(.system(size: 64))
-                            .foregroundStyle(.techniluxPrimary)
+                        Image("TechniLuxLogo")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 100, height: 100)
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
 
                         Text("TechniLux")
                             .font(.title)

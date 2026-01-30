@@ -289,7 +289,9 @@ struct CacheRecord: Decodable {
 }
 
 struct CacheResponse: Decodable {
-    let zones: [CacheEntry]
+    let zones: [CacheEntry]?
+
+    var zonesList: [CacheEntry] { zones ?? [] }
 }
 
 // MARK: - Logs
@@ -324,7 +326,9 @@ struct LogFile: Decodable, Identifiable {
 }
 
 struct LogFilesResponse: Decodable {
-    let logFiles: [LogFile]
+    let logFiles: [LogFile]?
+
+    var filesList: [LogFile] { logFiles ?? [] }
 }
 
 // MARK: - DHCP
