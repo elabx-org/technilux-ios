@@ -953,4 +953,103 @@ final class TechnitiumClient: ObservableObject {
         }
         return device
     }
+
+    // MARK: - Backup & Restore
+
+    func downloadBackup(
+        blockLists: Bool = true,
+        logs: Bool = true,
+        scopes: Bool = true,
+        apps: Bool = true,
+        stats: Bool = true,
+        zones: Bool = true,
+        allowedZones: Bool = true,
+        blockedZones: Bool = true,
+        dnsSettings: Bool = true,
+        authConfig: Bool = true,
+        logSettings: Bool = true,
+        node: String? = nil
+    ) async throws -> Data {
+        var params: [String: Any] = [
+            "blockLists": blockLists,
+            "logs": logs,
+            "scopes": scopes,
+            "apps": apps,
+            "stats": stats,
+            "zones": zones,
+            "allowedZones": allowedZones,
+            "blockedZones": blockedZones,
+            "dnsSettings": dnsSettings,
+            "authConfig": authConfig,
+            "logSettings": logSettings
+        ]
+        if let node { params["node"] = node }
+
+        return try await fetchRaw(.settingsBackup, params: params)
+    }
+
+    func restoreBackup(data: Data, deleteExistingFiles: Bool = false, node: String? = nil) async throws {
+        guard let serverURL else {
+            throw APIError.invalidURL
+        }
+
+        var urlComponents = URLComponents(url: serverURL.appendingPathComponent("/api/settings/restore"), resolvingAgainstBaseURL: false)
+
+        var queryItems: [URLQueryItem] = []
+        if let token {
+            queryItems.append(URLQueryItem(name: "token", value: token))
+        }
+        if let node {
+            queryItems.append(URLQueryItem(name: "node", value: node))
+        }
+        queryItems.append(URLQueryItem(name: "deleteExistingFiles", value: deleteExistingFiles ? "true" : "false"))
+        urlComponents?.queryItems = queryItems
+
+        guard let url = urlComponents?.url else {
+            throw APIError.invalidURL
+        }
+
+        let boundary = UUID().uuidString
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+
+        var body = Data()
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"file\"; filename=\"backup.zip\"\r\n".data(using: .utf8)!)
+        body.append("Content-Type: application/zip\r\n\r\n".data(using: .utf8)!)
+        body.append(data)
+        body.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
+        request.httpBody = body
+
+        let (responseData, response) = try await session.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            throw APIError.invalidResponse
+        }
+
+        let apiResponse = try decoder.decode(ApiResponse<EmptyResponse>.self, from: responseData)
+        if apiResponse.status == .error {
+            throw APIError.serverError(apiResponse.errorMessage ?? "Restore failed")
+        }
+    }
+
+    // MARK: - Zone Clone/Convert
+
+    func cloneZone(zone: String, sourceZone: String, node: String? = nil) async throws {
+        let _: ApiResponse<EmptyResponse> = try await request(
+            .zonesClone,
+            params: ["zone": zone, "sourceZone": sourceZone],
+            node: node
+        )
+    }
+
+    func convertZone(zone: String, type: ZoneType, node: String? = nil) async throws {
+        let _: ApiResponse<EmptyResponse> = try await request(
+            .zonesConvert,
+            params: ["zone": zone, "type": type.rawValue],
+            node: node
+        )
+    }
 }

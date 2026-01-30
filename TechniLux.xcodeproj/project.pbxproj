@@ -25,6 +25,9 @@
 		8A1B2C3D4E5F6010 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7010; };
 		8A1B2C3D4E5F6011 /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7011; };
 		8A1B2C3D4E5F6012 /* ZonesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7012; };
+		8A1B2C3D4E5F6030 /* ZoneDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7030; };
+		8A1B2C3D4E5F6031 /* RecordEditorSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7031; };
+		8A1B2C3D4E5F6032 /* DNSSECSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7032; };
 		8A1B2C3D4E5F6013 /* BlockingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7013; };
 		8A1B2C3D4E5F6014 /* CacheView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7014; };
 		8A1B2C3D4E5F6015 /* DHCPView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7015; };
@@ -59,6 +62,9 @@
 		8A1B2C3D4E5F7010 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		8A1B2C3D4E5F7011 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
 		8A1B2C3D4E5F7012 /* ZonesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZonesView.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F7030 /* ZoneDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoneDetailView.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F7031 /* RecordEditorSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordEditorSheet.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F7032 /* DNSSECSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DNSSECSheet.swift; sourceTree = "<group>"; };
 		8A1B2C3D4E5F7013 /* BlockingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockingView.swift; sourceTree = "<group>"; };
 		8A1B2C3D4E5F7014 /* CacheView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheView.swift; sourceTree = "<group>"; };
 		8A1B2C3D4E5F7015 /* DHCPView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DHCPView.swift; sourceTree = "<group>"; };
@@ -201,6 +207,9 @@
 			isa = PBXGroup;
 			children = (
 				8A1B2C3D4E5F7012 /* ZonesView.swift */,
+				8A1B2C3D4E5F7030 /* ZoneDetailView.swift */,
+				8A1B2C3D4E5F7031 /* RecordEditorSheet.swift */,
+				8A1B2C3D4E5F7032 /* DNSSECSheet.swift */,
 			);
 			path = Zones;
 			sourceTree = "<group>";
@@ -426,6 +435,9 @@
 				8A1B2C3D4E5F6010 /* DashboardView.swift in Sources */,
 				8A1B2C3D4E5F6011 /* DashboardViewModel.swift in Sources */,
 				8A1B2C3D4E5F6012 /* ZonesView.swift in Sources */,
+				8A1B2C3D4E5F6030 /* ZoneDetailView.swift in Sources */,
+				8A1B2C3D4E5F6031 /* RecordEditorSheet.swift in Sources */,
+				8A1B2C3D4E5F6032 /* DNSSECSheet.swift in Sources */,
 				8A1B2C3D4E5F6013 /* BlockingView.swift in Sources */,
 				8A1B2C3D4E5F6014 /* CacheView.swift in Sources */,
 				8A1B2C3D4E5F6015 /* DHCPView.swift in Sources */,
