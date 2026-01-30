@@ -1,15 +1,8 @@
 import SwiftUI
 
 /// Color palette matching the TechniLux web UI
+/// Note: techniluxPrimary and techniluxAccent are auto-generated from Assets.xcassets
 extension Color {
-    // MARK: - Primary (Teal)
-
-    /// Primary teal color - HSB(173, 58%, 39%) light / HSB(173, 58%, 50%) dark
-    static let techniluxPrimary = Color("TechniluxPrimary")
-
-    /// Lighter teal for accents
-    static let techniluxAccent = Color("TechniluxAccent")
-
     // MARK: - Semantic Colors
 
     /// Success green - HSB(142, 71%, 45%)
