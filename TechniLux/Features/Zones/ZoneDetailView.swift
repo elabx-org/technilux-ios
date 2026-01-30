@@ -307,7 +307,7 @@ struct ZoneDetailView: View {
                         Button {
                             Task {
                                 if let zone = viewModel.zone {
-                                    if zone.disabled {
+                                    if zone.isDisabled {
                                         try? await TechnitiumClient.shared.enableZone(name: zoneName, node: cluster.nodeParam)
                                     } else {
                                         try? await TechnitiumClient.shared.disableZone(name: zoneName, node: cluster.nodeParam)
@@ -317,8 +317,8 @@ struct ZoneDetailView: View {
                             }
                         } label: {
                             Label(
-                                viewModel.zone?.disabled == true ? "Enable Zone" : "Disable Zone",
-                                systemImage: viewModel.zone?.disabled == true ? "checkmark.circle" : "xmark.circle"
+                                viewModel.zone?.isDisabled == true ? "Enable Zone" : "Disable Zone",
+                                systemImage: viewModel.zone?.isDisabled == true ? "checkmark.circle" : "xmark.circle"
                             )
                         }
 
@@ -379,7 +379,7 @@ struct ZoneDetailView: View {
             if let zone = viewModel.zone {
                 DNSSECSheet(
                     zoneName: zoneName,
-                    dnssecStatus: zone.dnssecStatus,
+                    dnssecStatus: zone.dnssec,
                     onSign: {
                         await viewModel.loadData()
                     },
@@ -418,11 +418,11 @@ struct ZoneDetailView: View {
                             HStack(spacing: 8) {
                                 StatusBadge(text: zone.type.rawValue, color: .techniluxPrimary)
 
-                                if zone.disabled {
+                                if zone.isDisabled {
                                     StatusBadge(text: "Disabled", color: .orange)
                                 }
 
-                                if zone.dnssecStatus != "Unsigned" {
+                                if zone.dnssec != "Unsigned" {
                                     StatusBadge(text: "DNSSEC", color: .green)
                                 }
                             }
