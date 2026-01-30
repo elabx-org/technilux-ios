@@ -100,7 +100,13 @@ struct BlockingView: View {
     @State private var showAddSheet = false
     @State private var showDisableSheet = false
     @State private var checkDomain = ""
-    @State private var checkResult: BlockedCheckResponse?
+    @State private var checkResult: DomainCheckResult?
+
+    enum DomainCheckResult {
+        case inAllowedList
+        case inBlockedList
+        case notFound
+    }
     @Bindable var cluster = ClusterService.shared
     @Binding var pendingAction: WidgetAction?
 
@@ -110,8 +116,8 @@ struct BlockingView: View {
                 // Quick actions
                 quickActionsSection
 
-                // Domain check
-                domainCheckSection
+                // Domain search
+                domainSearchSection
 
                 // Tabs
                 Picker("List", selection: $viewModel.selectedTab) {
@@ -305,10 +311,10 @@ struct BlockingView: View {
         .padding(.top)
     }
 
-    private var domainCheckSection: some View {
+    private var domainSearchSection: some View {
         GlassCard {
             VStack(alignment: .leading, spacing: 12) {
-                Text("Check Domain")
+                Text("Search Domains")
                     .font(.subheadline)
                     .fontWeight(.medium)
 
@@ -318,18 +324,9 @@ struct BlockingView: View {
                         .autocorrectionDisabled()
 
                     Button {
-                        Task {
-                            do {
-                                checkResult = try await TechnitiumClient.shared.isBlocked(
-                                    domain: checkDomain,
-                                    node: ClusterService.shared.nodeParam
-                                )
-                            } catch {
-                                viewModel.error = "Check failed: \(error.localizedDescription)"
-                            }
-                        }
+                        searchDomainInLists()
                     } label: {
-                        Text("Check")
+                        Text("Search")
                     }
                     .buttonStyle(.glassPrimary)
                     .disabled(checkDomain.isEmpty)
@@ -337,15 +334,22 @@ struct BlockingView: View {
 
                 if let result = checkResult {
                     HStack {
-                        Image(systemName: result.isBlocked ? "xmark.circle.fill" : "checkmark.circle.fill")
-                            .foregroundStyle(result.isBlocked ? .red : .green)
-
-                        Text(result.isBlocked ? "Blocked" : "Allowed")
-                            .fontWeight(.medium)
-
-                        if let blockedBy = result.blockedBy {
-                            Text("by \(blockedBy)")
+                        switch result {
+                        case .inAllowedList:
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundStyle(.green)
+                            Text("Found in Allowed List")
+                                .fontWeight(.medium)
+                        case .inBlockedList:
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundStyle(.red)
+                            Text("Found in Blocked List")
+                                .fontWeight(.medium)
+                        case .notFound:
+                            Image(systemName: "minus.circle.fill")
                                 .foregroundStyle(.secondary)
+                            Text("Not found in either list")
+                                .fontWeight(.medium)
                         }
                     }
                     .font(.subheadline)
@@ -353,6 +357,32 @@ struct BlockingView: View {
             }
         }
         .padding(.horizontal)
+    }
+
+    private func searchDomainInLists() {
+        let domain = checkDomain.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // Check if domain or any parent domain is in the lists
+        if viewModel.allowedDomains.contains(where: { domainMatches(domain, pattern: $0.lowercased()) }) {
+            checkResult = .inAllowedList
+        } else if viewModel.blockedDomains.contains(where: { domainMatches(domain, pattern: $0.lowercased()) }) {
+            checkResult = .inBlockedList
+        } else {
+            checkResult = .notFound
+        }
+    }
+
+    private func domainMatches(_ domain: String, pattern: String) -> Bool {
+        // Exact match
+        if domain == pattern { return true }
+        // Wildcard match (*.example.com matches sub.example.com)
+        if pattern.hasPrefix("*.") {
+            let suffix = String(pattern.dropFirst(2))
+            return domain.hasSuffix("." + suffix) || domain == suffix
+        }
+        // Check if domain is a subdomain of pattern
+        if domain.hasSuffix("." + pattern) { return true }
+        return false
     }
 
     @ViewBuilder

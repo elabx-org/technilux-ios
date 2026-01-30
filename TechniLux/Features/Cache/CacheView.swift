@@ -3,7 +3,8 @@ import SwiftUI
 @MainActor
 @Observable
 final class CacheViewModel {
-    var zones: [CacheEntry] = []
+    var zones: [String] = []
+    var records: [CacheRecord] = []
     var currentPath: String = ""
     var isLoading = false
     var error: String?
@@ -19,6 +20,7 @@ final class CacheViewModel {
         do {
             let response = try await client.listCachedZones(domain: currentPath, node: cluster.nodeParam)
             zones = response.zonesList
+            records = response.recordsList
         } catch {
             self.error = error.localizedDescription
         }
@@ -101,48 +103,74 @@ struct CacheView: View {
                 }
 
                 // Cache list
-                if viewModel.isLoading && viewModel.zones.isEmpty {
+                if viewModel.isLoading && viewModel.zones.isEmpty && viewModel.records.isEmpty {
                     ProgressView("Loading cache...")
                         .frame(maxHeight: .infinity)
-                } else if viewModel.zones.isEmpty && viewModel.error == nil {
+                } else if viewModel.zones.isEmpty && viewModel.records.isEmpty && viewModel.error == nil {
                     EmptyStateView(
                         icon: "memorychip",
                         title: "Cache Empty",
                         description: "No cached entries found"
                     )
                     .frame(maxHeight: .infinity)
-                } else if !viewModel.zones.isEmpty {
-                    List(viewModel.zones) { zone in
-                        Button {
-                            Task { await viewModel.navigateTo(zone.zone) }
-                        } label: {
-                            HStack {
-                                Image(systemName: "folder.fill")
-                                    .foregroundStyle(.techniluxPrimary)
+                } else if !viewModel.zones.isEmpty || !viewModel.records.isEmpty {
+                    List {
+                        // Show zones (folders)
+                        ForEach(viewModel.zones, id: \.self) { zone in
+                            Button {
+                                Task { await viewModel.navigateTo(zone) }
+                            } label: {
+                                HStack {
+                                    Image(systemName: "folder.fill")
+                                        .foregroundStyle(.techniluxPrimary)
 
-                                VStack(alignment: .leading) {
-                                    Text(zone.zone)
+                                    Text(zone)
                                         .font(.headline)
                                         .foregroundStyle(.primary)
 
-                                    if let records = zone.records, !records.isEmpty {
-                                        Text("\(records.count) records")
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
-                                    }
+                                    Spacer()
+
+                                    Image(systemName: "chevron.right")
+                                        .foregroundStyle(.tertiary)
                                 }
-
-                                Spacer()
-
-                                Image(systemName: "chevron.right")
-                                    .foregroundStyle(.tertiary)
+                            }
+                            .swipeActions {
+                                Button(role: .destructive) {
+                                    Task { await viewModel.deleteZone(zone) }
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
                             }
                         }
-                        .swipeActions {
-                            Button(role: .destructive) {
-                                Task { await viewModel.deleteZone(zone.zone) }
-                            } label: {
-                                Label("Delete", systemImage: "trash")
+
+                        // Show records at this level
+                        if !viewModel.records.isEmpty {
+                            Section("Records") {
+                                ForEach(viewModel.records) { record in
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        HStack {
+                                            Text(record.name.isEmpty ? "@" : record.name)
+                                                .font(.headline)
+                                            Spacer()
+                                            Text(record.type)
+                                                .font(.caption)
+                                                .padding(.horizontal, 6)
+                                                .padding(.vertical, 2)
+                                                .background(.techniluxPrimary.opacity(0.2))
+                                                .clipShape(RoundedRectangle(cornerRadius: 4))
+                                        }
+                                        Text("TTL: \(record.ttl)")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                        if let rData = record.rData {
+                                            Text(rData.map { "\($0.key): \($0.value)" }.joined(separator: ", "))
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                                .lineLimit(2)
+                                        }
+                                    }
+                                    .padding(.vertical, 2)
+                                }
                             }
                         }
                     }

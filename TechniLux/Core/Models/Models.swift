@@ -274,24 +274,22 @@ struct BlockedCheckResponse: Decodable {
 
 // MARK: - Cache
 
-struct CacheEntry: Decodable, Identifiable {
-    let zone: String
-    let records: [CacheRecord]?
-
-    var id: String { zone }
-}
-
-struct CacheRecord: Decodable {
+struct CacheRecord: Decodable, Identifiable {
     let name: String
     let type: String
-    let ttl: Int
+    let ttl: String  // API returns formatted string like "472796 (5d11h19m56s)"
     let rData: [String: AnyCodable]?
+
+    var id: String { "\(name)-\(type)" }
 }
 
 struct CacheResponse: Decodable {
-    let zones: [CacheEntry]?
+    let domain: String?
+    let zones: [String]?  // Zone names as strings
+    let records: [CacheRecord]?
 
-    var zonesList: [CacheEntry] { zones ?? [] }
+    var zonesList: [String] { zones ?? [] }
+    var recordsList: [CacheRecord] { records ?? [] }
 }
 
 // MARK: - Logs
@@ -320,7 +318,7 @@ struct LogsResponse: Decodable {
 
 struct LogFile: Decodable, Identifiable {
     let fileName: String
-    let size: Int
+    let size: String  // API returns formatted string like "114.96 KB"
 
     var id: String { fileName }
 }
@@ -686,7 +684,7 @@ struct DnsAnswer: Decodable {
     let name: String
     let recordType: String
     let recordClass: String
-    let ttl: Int
+    let ttl: String  // API returns formatted string like "300 (5m)"
     let rData: [String: AnyCodable]?
     let dnssecStatus: String?
 
@@ -695,7 +693,7 @@ struct DnsAnswer: Decodable {
         case recordType = "Type"
         case recordClass = "Class"
         case ttl = "TTL"
-        case rData = "RData"
+        case rData = "RDATA"
         case dnssecStatus = "DnssecStatus"
     }
 }

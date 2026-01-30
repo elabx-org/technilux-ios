@@ -53,21 +53,15 @@ struct NetworkView: View {
                             .font(.system(size: 56, weight: .light))
                             .foregroundStyle(.secondary)
 
-                        Text("Network Helper Not Installed")
+                        Text("Network Helper Unavailable")
                             .font(.title3)
                             .fontWeight(.semibold)
 
-                        Text("The Network Helper app is required to discover devices on your network. Install it from the Apps page.")
+                        Text("Network device discovery requires the TechniLux web proxy. Connect to your server via the TechniLux web UI port (e.g., 5381) instead of the direct Technitium API port.")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal)
-
-                        NavigationLink(destination: AppsView()) {
-                            Text("Go to Apps")
-                                .fontWeight(.medium)
-                        }
-                        .buttonStyle(.glassPrimary)
                     }
                     .frame(maxHeight: .infinity)
                     .padding()
