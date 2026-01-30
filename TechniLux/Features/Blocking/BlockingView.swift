@@ -319,10 +319,14 @@ struct BlockingView: View {
 
                     Button {
                         Task {
-                            checkResult = try? await TechnitiumClient.shared.isBlocked(
-                                domain: checkDomain,
-                                node: ClusterService.shared.nodeParam
-                            )
+                            do {
+                                checkResult = try await TechnitiumClient.shared.isBlocked(
+                                    domain: checkDomain,
+                                    node: ClusterService.shared.nodeParam
+                                )
+                            } catch {
+                                viewModel.error = "Check failed: \(error.localizedDescription)"
+                            }
                         }
                     } label: {
                         Text("Check")

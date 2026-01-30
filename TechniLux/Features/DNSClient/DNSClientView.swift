@@ -1,5 +1,12 @@
 import SwiftUI
 
+struct ServerPreset: Identifiable {
+    let id: String
+    let label: String
+
+    var value: String { id }
+}
+
 @MainActor
 @Observable
 final class DNSClientViewModel {
@@ -12,6 +19,15 @@ final class DNSClientViewModel {
     var result: DnsResolveResponse?
     var isLoading = false
     var error: String?
+
+    let serverPresets: [ServerPreset] = [
+        ServerPreset(id: "this-server", label: "This Server"),
+        ServerPreset(id: "recursive-resolver", label: "Recursive Resolver"),
+        ServerPreset(id: "8.8.8.8", label: "Google DNS (8.8.8.8)"),
+        ServerPreset(id: "1.1.1.1", label: "Cloudflare (1.1.1.1)"),
+        ServerPreset(id: "9.9.9.9", label: "Quad9 (9.9.9.9)"),
+        ServerPreset(id: "208.67.222.222", label: "OpenDNS")
+    ]
 
     let recordTypes = ["A", "AAAA", "CNAME", "MX", "NS", "PTR", "SOA", "SRV", "TXT", "CAA", "ANY"]
     let protocols = ["Udp", "Tcp", "Tls", "Https", "Quic"]
@@ -126,11 +142,15 @@ struct DNSClientView: View {
                         .font(.subheadline)
                         .fontWeight(.medium)
 
-                    TextField("this-server", text: $viewModel.server)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled()
-                        .padding()
-                        .glassBackground()
+                    Picker("Server", selection: $viewModel.server) {
+                        ForEach(viewModel.serverPresets) { preset in
+                            Text(preset.label).tag(preset.value)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                    .glassBackground()
                 }
 
                 // Domain

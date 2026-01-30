@@ -39,14 +39,14 @@ final class LogsViewModel {
             let response = try await client.listApps(node: cluster.nodeParam)
             var loggers: [QueryLoggerApp] = []
 
-            for app in response.apps {
+            for app in response.appsList {
                 if let processors = app.dnsApps {
                     for processor in processors {
                         if processor.isQueryLogger == true {
                             loggers.append(QueryLoggerApp(
                                 name: app.name,
                                 classPath: processor.classPath,
-                                description: processor.description
+                                description: processor.displayDescription
                             ))
                         }
                     }

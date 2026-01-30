@@ -387,28 +387,36 @@ struct DhcpLeasesResponse: Decodable {
 
 struct DnsApp: Decodable, Identifiable {
     let name: String
-    let description: String
-    let version: String
+    let description: String?
+    let version: String?
     let updateVersion: String?
     let updateUrl: String?
     let dnsApps: [DnsAppProcessor]?
 
     var id: String { name }
+
+    // Safe accessors
+    var displayDescription: String { description ?? "" }
+    var displayVersion: String { version ?? "Unknown" }
 }
 
 struct DnsAppProcessor: Decodable {
     let classPath: String
-    let description: String
+    let description: String?
     let isAppRecordRequestHandler: Bool?
     let isRequestController: Bool?
     let isAuthoritativeRequestHandler: Bool?
     let isRequestBlockingHandler: Bool?
     let isQueryLogger: Bool?
     let isPostProcessor: Bool?
+
+    var displayDescription: String { description ?? "" }
 }
 
 struct AppsResponse: Decodable {
-    let apps: [DnsApp]
+    let apps: [DnsApp]?
+
+    var appsList: [DnsApp] { apps ?? [] }
 }
 
 struct AppStoreEntry: Decodable, Identifiable {

@@ -39,7 +39,7 @@ final class AppsViewModel {
 
         do {
             let response = try await client.listApps(node: cluster.nodeParam)
-            installedApps = response.apps
+            installedApps = response.appsList
         } catch {
             self.error = error.localizedDescription
         }
@@ -295,12 +295,12 @@ struct InstalledAppRow: View {
                     }
                 }
 
-                Text(app.description)
+                Text(app.displayDescription)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
 
-                Text("v\(app.version)")
+                Text("v\(app.displayVersion)")
                     .font(.caption)
                     .foregroundStyle(.tertiary)
             }
@@ -364,14 +364,14 @@ struct AppDetailView: View {
     var body: some View {
         List {
             Section("Info") {
-                InfoRow(label: "Version", value: app.version)
+                InfoRow(label: "Version", value: app.displayVersion)
                 if let updateVersion = app.updateVersion {
                     InfoRow(label: "Update Available", value: updateVersion)
                 }
             }
 
             Section("Description") {
-                Text(app.description)
+                Text(app.displayDescription)
                     .font(.subheadline)
             }
 
@@ -383,7 +383,7 @@ struct AppDetailView: View {
                                 .font(.subheadline)
                                 .fontWeight(.medium)
 
-                            Text(processor.description)
+                            Text(processor.displayDescription)
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
