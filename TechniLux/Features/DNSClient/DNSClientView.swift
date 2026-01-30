@@ -168,7 +168,7 @@ struct DNSClientView: View {
                             .font(.subheadline)
                             .fontWeight(.medium)
 
-                        Picker("Protocol", selection: $viewModel.protocol) {
+                        Picker("Protocol", selection: $viewModel.queryProtocol) {
                             ForEach(viewModel.protocols, id: \.self) { proto in
                                 Text(proto).tag(proto)
                             }

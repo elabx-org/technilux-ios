@@ -23,13 +23,6 @@ extension Color {
 
     /// Info blue - HSB(199, 89%, 48%)
     static let techniluxInfo = Color(hue: 199/360, saturation: 0.89, brightness: 0.48)
-
-    // MARK: - Convenience
-
-    /// Primary color that adapts to color scheme
-    static var primary: Color {
-        Color("TechniluxPrimary")
-    }
 }
 
 /// Color scheme definitions for asset catalog
