@@ -27,9 +27,11 @@ jobs:
 
       - name: Generate App Icon
         run: |
-          pip3 install pillow
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install pillow
           python3 << 'EOF'
-          from PIL import Image, ImageDraw
+          from PIL import Image, ImageDraw, ImageFont
 
           # Create 1024x1024 icon with TechniLux teal color
           size = 1024
@@ -37,9 +39,7 @@ jobs:
           draw = ImageDraw.Draw(img)
 
           # Add a simple "T" letter in white
-          from PIL import ImageFont
           try:
-              # Try system font
               font = ImageFont.truetype('/System/Library/Fonts/Helvetica.ttc', 600)
           except:
               font = ImageFont.load_default()
@@ -135,15 +135,16 @@ jobs:
 
       - name: Generate App Icon
         run: |
-          pip3 install pillow
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install pillow
           python3 << 'EOF'
-          from PIL import Image, ImageDraw
+          from PIL import Image, ImageDraw, ImageFont
 
           size = 1024
           img = Image.new('RGB', (size, size), '#1d6a64')
           draw = ImageDraw.Draw(img)
 
-          from PIL import ImageFont
           try:
               font = ImageFont.truetype('/System/Library/Fonts/Helvetica.ttc', 600)
           except:
