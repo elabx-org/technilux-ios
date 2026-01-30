@@ -212,7 +212,7 @@ struct DisableRequest: Codable {
 
 // MARK: - Widget Actions
 
-enum WidgetAction {
+enum WidgetAction: Equatable {
     case toggleBlocking
     case enableBlocking
     case disableBlocking

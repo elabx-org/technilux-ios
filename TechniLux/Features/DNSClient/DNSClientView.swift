@@ -301,7 +301,7 @@ struct AnswerRow: View {
 
                 Spacer()
 
-                StatusBadge(text: answer.type, color: .techniluxPrimary)
+                StatusBadge(text: answer.recordType, color: .techniluxPrimary)
             }
 
             if let rData = answer.rData {
@@ -318,7 +318,7 @@ struct AnswerRow: View {
                 if let status = answer.dnssecStatus {
                     Text("• DNSSEC: \(status)")
                         .font(.caption2)
-                        .foregroundStyle(status == "Secure" ? .green : .tertiary)
+                        .foregroundStyle(status == "Secure" ? Color.green : Color.secondary)
                 }
             }
         }

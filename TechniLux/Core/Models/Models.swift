@@ -630,39 +630,47 @@ struct DnsResolveResponse: Decodable {
 }
 
 struct DnsMetadata: Decodable {
-    let NameServer: String?
-    let Protocol: String?
-    let DatagramSize: Int?
-    let RoundTripTime: String?
+    let nameServer: String?
+    let queryProtocol: String?
+    let datagramSize: Int?
+    let roundTripTime: String?
 
-    var nameServer: String { NameServer ?? "Unknown" }
-    var queryProtocol: String { Protocol ?? "Unknown" }
-    var datagramSize: Int { DatagramSize ?? 0 }
-    var roundTripTime: String { RoundTripTime ?? "N/A" }
+    enum CodingKeys: String, CodingKey {
+        case nameServer = "NameServer"
+        case queryProtocol = "Protocol"
+        case datagramSize = "DatagramSize"
+        case roundTripTime = "RoundTripTime"
+    }
 }
 
 struct DnsQuestion: Decodable {
-    let Name: String
-    let Type: String
-    let Class: String
+    let name: String
+    let recordType: String
+    let recordClass: String
 
-    var name: String { Name }
-    var type: String { Type }
+    enum CodingKeys: String, CodingKey {
+        case name = "Name"
+        case recordType = "Type"
+        case recordClass = "Class"
+    }
 }
 
 struct DnsAnswer: Decodable {
-    let Name: String
-    let Type: String
-    let Class: String
-    let TTL: Int
-    let RData: [String: AnyCodable]?
-    let DnssecStatus: String?
+    let name: String
+    let recordType: String
+    let recordClass: String
+    let ttl: Int
+    let rData: [String: AnyCodable]?
+    let dnssecStatus: String?
 
-    var name: String { Name }
-    var type: String { Type }
-    var ttl: Int { TTL }
-    var rData: [String: AnyCodable]? { RData }
-    var dnssecStatus: String? { DnssecStatus }
+    enum CodingKeys: String, CodingKey {
+        case name = "Name"
+        case recordType = "Type"
+        case recordClass = "Class"
+        case ttl = "TTL"
+        case rData = "RData"
+        case dnssecStatus = "DnssecStatus"
+    }
 }
 
 // MARK: - Profile
