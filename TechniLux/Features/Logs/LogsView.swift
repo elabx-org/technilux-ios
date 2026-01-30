@@ -211,7 +211,8 @@ struct LogsView: View {
             .disabled(viewModel.currentPage >= viewModel.totalPages)
         }
         .padding()
-        .background(.glass)
+        .background(.ultraThinMaterial)
+        .glassEffect()
     }
 
     private var logsList: some View {

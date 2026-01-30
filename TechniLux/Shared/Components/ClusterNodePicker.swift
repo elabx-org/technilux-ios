@@ -34,7 +34,8 @@ struct ClusterNodePicker: View {
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(.glass)
+                .background(.ultraThinMaterial)
+                .glassEffect()
                 .clipShape(Capsule())
             }
         }

@@ -5,7 +5,8 @@ extension View {
     /// Apply liquid glass card styling with depth and refraction
     func glassCard() -> some View {
         self
-            .background(.glass)
+            .background(.ultraThinMaterial)
+            .glassEffect()
             .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
             .shadow(color: .black.opacity(0.1), radius: 12, x: 0, y: 6)
     }
@@ -13,7 +14,8 @@ extension View {
     /// Apply glass card with subtle border highlight
     func glassCardWithBorder() -> some View {
         self
-            .background(.glass)
+            .background(.ultraThinMaterial)
+            .glassEffect()
             .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 24, style: .continuous)
@@ -25,21 +27,23 @@ extension View {
     /// Apply glass button styling
     func glassButton() -> some View {
         self
-            .background(.glass)
+            .background(.regularMaterial)
+            .glassEffect()
             .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 
     /// Apply subtle glass background for inputs
     func glassBackground() -> some View {
         self
-            .background(.glass.opacity(0.6))
+            .background(.thinMaterial)
+            .glassEffect()
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 
     /// Apply prominent glass effect for hero elements
     func glassHero() -> some View {
         self
-            .background(.glass)
+            .background(.thickMaterial)
             .glassEffect()
             .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
             .shadow(color: .black.opacity(0.15), radius: 20, x: 0, y: 10)
@@ -74,7 +78,8 @@ struct OutlinedButtonStyle: ButtonStyle {
         configuration.label
             .padding(.horizontal, 20)
             .padding(.vertical, 12)
-            .background(.glass.opacity(0.8))
+            .background(.ultraThinMaterial)
+            .glassEffect()
             .overlay(
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
                     .stroke(Color.primary.opacity(0.15), lineWidth: 1)
