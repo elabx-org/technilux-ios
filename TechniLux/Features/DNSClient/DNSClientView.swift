@@ -194,10 +194,10 @@ struct DNSClientView: View {
                             .font(.headline)
 
                         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
-                            InfoRow(label: "Name Server", value: metadata.nameServer)
-                            InfoRow(label: "Protocol", value: metadata.queryProtocol)
-                            InfoRow(label: "Response Size", value: "\(metadata.datagramSize) bytes")
-                            InfoRow(label: "Round Trip", value: metadata.roundTripTime)
+                            InfoRow(label: "Name Server", value: metadata.nameServer ?? "Unknown")
+                            InfoRow(label: "Protocol", value: metadata.queryProtocol ?? "Unknown")
+                            InfoRow(label: "Response Size", value: "\(metadata.datagramSize ?? 0) bytes")
+                            InfoRow(label: "Round Trip", value: metadata.roundTripTime ?? "N/A")
                         }
                     }
                 }
