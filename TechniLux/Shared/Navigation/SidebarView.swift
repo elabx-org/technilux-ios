@@ -4,6 +4,7 @@ import SwiftUI
 struct SidebarView: View {
     @State private var selectedSection: SidebarSection? = .dashboard
     @Bindable var cluster = ClusterService.shared
+    @Binding var pendingAction: WidgetAction?
 
     enum SidebarSection: String, CaseIterable, Identifiable {
         case dashboard
@@ -59,11 +60,11 @@ struct SidebarView: View {
         }
 
         @ViewBuilder
-        var destination: some View {
+        func destination(pendingAction: Binding<WidgetAction?>) -> some View {
             switch self {
             case .dashboard: DashboardView()
             case .zones: ZonesView()
-            case .blocking: BlockingView()
+            case .blocking: BlockingView(pendingAction: pendingAction)
             case .cache: CacheView()
             case .dhcp: DHCPView()
             case .apps: AppsView()
@@ -144,7 +145,7 @@ struct SidebarView: View {
         } detail: {
             if let section = selectedSection {
                 NavigationStack {
-                    section.destination
+                    section.destination(pendingAction: $pendingAction)
                 }
             } else {
                 ContentUnavailableView(
@@ -163,12 +164,14 @@ struct SidebarView: View {
 /// Root view that switches between tab and sidebar based on device
 struct AdaptiveNavigationView: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Binding var selectedTab: AppTab
+    @Binding var pendingAction: WidgetAction?
 
     var body: some View {
         if horizontalSizeClass == .regular {
-            SidebarView()
+            SidebarView(pendingAction: $pendingAction)
         } else {
-            MainTabView()
+            MainTabView(selectedTab: $selectedTab, pendingAction: $pendingAction)
         }
     }
 }
@@ -176,9 +179,9 @@ struct AdaptiveNavigationView: View {
 // MARK: - Previews
 
 #Preview("Sidebar View") {
-    SidebarView()
+    SidebarView(pendingAction: .constant(nil))
 }
 
 #Preview("Adaptive Navigation") {
-    AdaptiveNavigationView()
+    AdaptiveNavigationView(selectedTab: .constant(.dashboard), pendingAction: .constant(nil))
 }

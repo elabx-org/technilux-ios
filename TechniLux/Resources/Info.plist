@@ -60,5 +60,18 @@
 	<false/>
 	<key>NSFaceIDUsageDescription</key>
 	<string>TechniLux uses Face ID to securely authenticate and access your DNS server.</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.technilux.app</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>technilux</string>
+			</array>
+		</dict>
+	</array>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
 </dict>
 </plist>

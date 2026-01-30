@@ -101,6 +101,7 @@ struct BlockingView: View {
     @State private var checkDomain = ""
     @State private var checkResult: BlockedCheckResponse?
     @Bindable var cluster = ClusterService.shared
+    @Binding var pendingAction: WidgetAction?
 
     var body: some View {
         NavigationStack {
@@ -165,6 +166,12 @@ struct BlockingView: View {
                     await viewModel.loadDomains()
                 }
             }
+            .onChange(of: pendingAction) { _, action in
+                if let action = action {
+                    handleWidgetAction(action)
+                    pendingAction = nil
+                }
+            }
             .sheet(isPresented: $showAddSheet) {
                 AddDomainSheet(
                     isAllowed: viewModel.selectedTab == 0,
@@ -180,8 +187,54 @@ struct BlockingView: View {
                 )
             }
             .sheet(isPresented: $showDisableSheet) {
-                DisableBlockingSheet(viewModel: viewModel)
+                DisableBlockingSheet(viewModel: viewModel, startLiveActivity: startLiveActivity)
             }
+        }
+    }
+
+    private func handleWidgetAction(_ action: WidgetAction) {
+        Task {
+            switch action {
+            case .toggleBlocking:
+                if viewModel.blockingEnabled {
+                    showDisableSheet = true
+                } else {
+                    await viewModel.reEnableBlocking()
+                    endLiveActivity()
+                }
+
+            case .enableBlocking:
+                await viewModel.reEnableBlocking()
+                endLiveActivity()
+
+            case .disableBlocking:
+                showDisableSheet = true
+
+            case .temporaryDisable(let minutes):
+                await viewModel.temporaryDisable(minutes: minutes)
+                startLiveActivity(minutes: minutes)
+
+            case .showBlocking, .showDashboard, .showLogs:
+                break
+            }
+        }
+    }
+
+    private func startLiveActivity(minutes: Int) {
+        guard let endTime = viewModel.disableEndTime else { return }
+
+        if #available(iOS 16.2, *) {
+            let serverName = cluster.selectedNode ?? "Technitium"
+            WidgetService.shared.startBlockingActivity(
+                serverName: serverName,
+                disableEndTime: endTime
+            )
+        }
+    }
+
+    private func endLiveActivity() {
+        if #available(iOS 16.2, *) {
+            WidgetService.shared.endBlockingActivities()
         }
     }
 
@@ -344,6 +397,7 @@ struct AddDomainSheet: View {
 struct DisableBlockingSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Bindable var viewModel: BlockingViewModel
+    var startLiveActivity: (Int) -> Void
 
     let durations = [5, 15, 30, 60, 120]
 
@@ -355,6 +409,7 @@ struct DisableBlockingSheet: View {
                         Button {
                             Task {
                                 await viewModel.temporaryDisable(minutes: minutes)
+                                startLiveActivity(minutes)
                                 dismiss()
                             }
                         } label: {
@@ -389,5 +444,5 @@ struct DisableBlockingSheet: View {
 }
 
 #Preview("Blocking View") {
-    BlockingView()
+    BlockingView(pendingAction: .constant(nil))
 }

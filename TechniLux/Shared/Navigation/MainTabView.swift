@@ -2,58 +2,34 @@ import SwiftUI
 
 /// Main tab view for iPhone navigation
 struct MainTabView: View {
-    @State private var selectedTab = Tab.dashboard
-
-    enum Tab: String, CaseIterable {
-        case dashboard
-        case zones
-        case blocking
-        case more
-
-        var title: String {
-            switch self {
-            case .dashboard: return "Dashboard"
-            case .zones: return "Zones"
-            case .blocking: return "Blocking"
-            case .more: return "More"
-            }
-        }
-
-        var icon: String {
-            switch self {
-            case .dashboard: return "chart.bar.fill"
-            case .zones: return "globe"
-            case .blocking: return "hand.raised.fill"
-            case .more: return "ellipsis.circle.fill"
-            }
-        }
-    }
+    @Binding var selectedTab: AppTab
+    @Binding var pendingAction: WidgetAction?
 
     var body: some View {
         TabView(selection: $selectedTab) {
             DashboardView()
                 .tabItem {
-                    Label(Tab.dashboard.title, systemImage: Tab.dashboard.icon)
+                    Label("Dashboard", systemImage: "chart.bar.fill")
                 }
-                .tag(Tab.dashboard)
+                .tag(AppTab.dashboard)
 
             ZonesView()
                 .tabItem {
-                    Label(Tab.zones.title, systemImage: Tab.zones.icon)
+                    Label("Zones", systemImage: "globe")
                 }
-                .tag(Tab.zones)
+                .tag(AppTab.zones)
 
-            BlockingView()
+            BlockingView(pendingAction: $pendingAction)
                 .tabItem {
-                    Label(Tab.blocking.title, systemImage: Tab.blocking.icon)
+                    Label("Blocking", systemImage: "hand.raised.fill")
                 }
-                .tag(Tab.blocking)
+                .tag(AppTab.blocking)
 
             MoreView()
                 .tabItem {
-                    Label(Tab.more.title, systemImage: Tab.more.icon)
+                    Label("More", systemImage: "ellipsis.circle.fill")
                 }
-                .tag(Tab.more)
+                .tag(AppTab.more)
         }
         .tint(.techniluxPrimary)
     }
@@ -153,5 +129,5 @@ struct MoreView: View {
 // MARK: - Previews
 
 #Preview("Main Tab View") {
-    MainTabView()
+    MainTabView(selectedTab: .constant(.dashboard), pendingAction: .constant(nil))
 }
