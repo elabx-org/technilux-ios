@@ -1,0 +1,119 @@
+name: Build iOS App
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build type'
+        default: 'release'
+        type: choice
+        options: [debug, release]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.0.app
+
+      - name: Get version
+        id: version
+        run: |
+          VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" TechniLux/Resources/Info.plist)
+          BUILD=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" TechniLux/Resources/Info.plist)
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "build=${BUILD}" >> $GITHUB_OUTPUT
+          echo "Version: ${VERSION} (${BUILD})"
+
+      - name: Build unsigned app
+        run: |
+          xcodebuild \
+            -project TechniLux.xcodeproj \
+            -scheme TechniLux \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            build
+
+      - name: Package IPA
+        run: |
+          mkdir -p Payload
+          cp -r build/Build/Products/Release-iphoneos/TechniLux.app Payload/
+          zip -r TechniLux-${{ steps.version.outputs.version }}-unsigned.ipa Payload
+          rm -rf Payload
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TechniLux-${{ steps.version.outputs.version }}-unsigned
+          path: TechniLux-${{ steps.version.outputs.version }}-unsigned.ipa
+          retention-days: 30
+
+      - name: Create Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: TechniLux iOS v${{ steps.version.outputs.version }}
+          files: TechniLux-${{ steps.version.outputs.version }}-unsigned.ipa
+          body: |
+            ## TechniLux iOS v${{ steps.version.outputs.version }}
+
+            Native iOS app for managing Technitium DNS Server.
+
+            ### Installation (Feather)
+
+            1. Download `TechniLux-${{ steps.version.outputs.version }}-unsigned.ipa` below
+            2. Open [Feather](https://github.com/khcrysalis/Feather) on your iOS device
+            3. Import the IPA and sign with your Apple ID
+            4. Install and connect to your Technitium server
+
+            ### Requirements
+
+            - iOS 18.0+
+            - iPhone or iPad
+            - Apple ID (for signing via Feather)
+
+            ### What's New
+
+            See [CHANGELOG.md](https://github.com/elabx-org/technilux-ios/blob/main/CHANGELOG.md) for details.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  test:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.0.app
+
+      - name: Run tests
+        run: |
+          xcodebuild test \
+            -project TechniLux.xcodeproj \
+            -scheme TechniLux \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -resultBundlePath TestResults.xcresult \
+            || true
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: TestResults.xcresult
+          retention-days: 7

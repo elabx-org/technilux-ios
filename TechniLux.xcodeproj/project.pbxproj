@@ -1,0 +1,680 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		/* App */
+		APP001 /* TechniLuxApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC001; };
+
+		/* Core/API */
+		API001 /* APIEndpoints.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC002; };
+		API002 /* APIResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC003; };
+		API003 /* TechnitiumClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC004; };
+
+		/* Core/Models */
+		MDL001 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC005; };
+
+		/* Core/Services */
+		SVC001 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC006; };
+		SVC002 /* ClusterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC007; };
+		SVC003 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC008; };
+
+		/* Shared/Components */
+		CMP001 /* ClusterNodePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC009; };
+		CMP002 /* GlassCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC010; };
+
+		/* Shared/Styles */
+		STY001 /* ColorPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC011; };
+		STY002 /* GlassStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC012; };
+
+		/* Shared/Navigation */
+		NAV001 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC013; };
+		NAV002 /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC014; };
+
+		/* Features */
+		FTR001 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC015; };
+		FTR002 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC016; };
+		FTR003 /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC017; };
+		FTR004 /* ZonesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC018; };
+		FTR005 /* BlockingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC019; };
+		FTR006 /* CacheView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC020; };
+		FTR007 /* DHCPView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC021; };
+		FTR008 /* AppsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC022; };
+		FTR009 /* LogsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC023; };
+		FTR010 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC024; };
+		FTR011 /* AdminView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC025; };
+		FTR012 /* NetworkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC026; };
+		FTR013 /* DNSClientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC027; };
+		FTR014 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC028; };
+		FTR015 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC029; };
+
+		/* Resources */
+		RES001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = RES001F; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		PROD001 /* TechniLux.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TechniLux.app; sourceTree = BUILT_PRODUCTS_DIR; };
+
+		/* Source Files */
+		SRC001 /* TechniLuxApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TechniLuxApp.swift; sourceTree = "<group>"; };
+		SRC002 /* APIEndpoints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIEndpoints.swift; sourceTree = "<group>"; };
+		SRC003 /* APIResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIResponse.swift; sourceTree = "<group>"; };
+		SRC004 /* TechnitiumClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TechnitiumClient.swift; sourceTree = "<group>"; };
+		SRC005 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		SRC006 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		SRC007 /* ClusterService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClusterService.swift; sourceTree = "<group>"; };
+		SRC008 /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
+		SRC009 /* ClusterNodePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClusterNodePicker.swift; sourceTree = "<group>"; };
+		SRC010 /* GlassCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassCard.swift; sourceTree = "<group>"; };
+		SRC011 /* ColorPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPalette.swift; sourceTree = "<group>"; };
+		SRC012 /* GlassStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassStyle.swift; sourceTree = "<group>"; };
+		SRC013 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		SRC014 /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarView.swift; sourceTree = "<group>"; };
+		SRC015 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		SRC016 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		SRC017 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
+		SRC018 /* ZonesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZonesView.swift; sourceTree = "<group>"; };
+		SRC019 /* BlockingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockingView.swift; sourceTree = "<group>"; };
+		SRC020 /* CacheView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheView.swift; sourceTree = "<group>"; };
+		SRC021 /* DHCPView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DHCPView.swift; sourceTree = "<group>"; };
+		SRC022 /* AppsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppsView.swift; sourceTree = "<group>"; };
+		SRC023 /* LogsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsView.swift; sourceTree = "<group>"; };
+		SRC024 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		SRC025 /* AdminView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminView.swift; sourceTree = "<group>"; };
+		SRC026 /* NetworkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkView.swift; sourceTree = "<group>"; };
+		SRC027 /* DNSClientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DNSClientView.swift; sourceTree = "<group>"; };
+		SRC028 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		SRC029 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
+
+		/* Resources */
+		RES001F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		RES002F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FRM001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		ROOT /* Root */ = {
+			isa = PBXGroup;
+			children = (
+				GRP001 /* TechniLux */,
+				GRP100 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		GRP100 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				PROD001 /* TechniLux.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		GRP001 /* TechniLux */ = {
+			isa = PBXGroup;
+			children = (
+				GRP002 /* App */,
+				GRP003 /* Core */,
+				GRP010 /* Features */,
+				GRP030 /* Shared */,
+				GRP040 /* Resources */,
+			);
+			path = TechniLux;
+			sourceTree = "<group>";
+		};
+		GRP002 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				SRC001 /* TechniLuxApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		GRP003 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				GRP004 /* API */,
+				GRP005 /* Models */,
+				GRP006 /* Services */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		GRP004 /* API */ = {
+			isa = PBXGroup;
+			children = (
+				SRC002 /* APIEndpoints.swift */,
+				SRC003 /* APIResponse.swift */,
+				SRC004 /* TechnitiumClient.swift */,
+			);
+			path = API;
+			sourceTree = "<group>";
+		};
+		GRP005 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				SRC005 /* Models.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		GRP006 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				SRC006 /* AuthService.swift */,
+				SRC007 /* ClusterService.swift */,
+				SRC008 /* KeychainService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		GRP010 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				GRP011 /* Authentication */,
+				GRP012 /* Dashboard */,
+				GRP013 /* Zones */,
+				GRP014 /* Blocking */,
+				GRP015 /* Cache */,
+				GRP016 /* DHCP */,
+				GRP017 /* Apps */,
+				GRP018 /* Logs */,
+				GRP019 /* Settings */,
+				GRP020 /* Admin */,
+				GRP021 /* Network */,
+				GRP022 /* DNSClient */,
+				GRP023 /* Profile */,
+				GRP024 /* About */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		GRP011 /* Authentication */ = {
+			isa = PBXGroup;
+			children = (
+				SRC015 /* LoginView.swift */,
+			);
+			path = Authentication;
+			sourceTree = "<group>";
+		};
+		GRP012 /* Dashboard */ = {
+			isa = PBXGroup;
+			children = (
+				SRC016 /* DashboardView.swift */,
+				SRC017 /* DashboardViewModel.swift */,
+			);
+			path = Dashboard;
+			sourceTree = "<group>";
+		};
+		GRP013 /* Zones */ = {
+			isa = PBXGroup;
+			children = (
+				SRC018 /* ZonesView.swift */,
+			);
+			path = Zones;
+			sourceTree = "<group>";
+		};
+		GRP014 /* Blocking */ = {
+			isa = PBXGroup;
+			children = (
+				SRC019 /* BlockingView.swift */,
+			);
+			path = Blocking;
+			sourceTree = "<group>";
+		};
+		GRP015 /* Cache */ = {
+			isa = PBXGroup;
+			children = (
+				SRC020 /* CacheView.swift */,
+			);
+			path = Cache;
+			sourceTree = "<group>";
+		};
+		GRP016 /* DHCP */ = {
+			isa = PBXGroup;
+			children = (
+				SRC021 /* DHCPView.swift */,
+			);
+			path = DHCP;
+			sourceTree = "<group>";
+		};
+		GRP017 /* Apps */ = {
+			isa = PBXGroup;
+			children = (
+				SRC022 /* AppsView.swift */,
+			);
+			path = Apps;
+			sourceTree = "<group>";
+		};
+		GRP018 /* Logs */ = {
+			isa = PBXGroup;
+			children = (
+				SRC023 /* LogsView.swift */,
+			);
+			path = Logs;
+			sourceTree = "<group>";
+		};
+		GRP019 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				SRC024 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		GRP020 /* Admin */ = {
+			isa = PBXGroup;
+			children = (
+				SRC025 /* AdminView.swift */,
+			);
+			path = Admin;
+			sourceTree = "<group>";
+		};
+		GRP021 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				SRC026 /* NetworkView.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		GRP022 /* DNSClient */ = {
+			isa = PBXGroup;
+			children = (
+				SRC027 /* DNSClientView.swift */,
+			);
+			path = DNSClient;
+			sourceTree = "<group>";
+		};
+		GRP023 /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				SRC028 /* ProfileView.swift */,
+			);
+			path = Profile;
+			sourceTree = "<group>";
+		};
+		GRP024 /* About */ = {
+			isa = PBXGroup;
+			children = (
+				SRC029 /* AboutView.swift */,
+			);
+			path = About;
+			sourceTree = "<group>";
+		};
+		GRP030 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				GRP031 /* Components */,
+				GRP032 /* Styles */,
+				GRP033 /* Navigation */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		GRP031 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				SRC009 /* ClusterNodePicker.swift */,
+				SRC010 /* GlassCard.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		GRP032 /* Styles */ = {
+			isa = PBXGroup;
+			children = (
+				SRC011 /* ColorPalette.swift */,
+				SRC012 /* GlassStyle.swift */,
+			);
+			path = Styles;
+			sourceTree = "<group>";
+		};
+		GRP033 /* Navigation */ = {
+			isa = PBXGroup;
+			children = (
+				SRC013 /* MainTabView.swift */,
+				SRC014 /* SidebarView.swift */,
+			);
+			path = Navigation;
+			sourceTree = "<group>";
+		};
+		GRP040 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				RES001F /* Assets.xcassets */,
+				RES002F /* Info.plist */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		TGT001 /* TechniLux */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CFG001 /* Build configuration list for PBXNativeTarget "TechniLux" */;
+			buildPhases = (
+				SRC100 /* Sources */,
+				FRM001 /* Frameworks */,
+				RES100 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TechniLux;
+			productName = TechniLux;
+			productReference = PROD001 /* TechniLux.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		PRJ001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					TGT001 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = CFG002 /* Build configuration list for PBXProject "TechniLux" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = ROOT;
+			productRefGroup = GRP100 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				TGT001 /* TechniLux */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		RES100 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				RES001 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		SRC100 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				APP001 /* TechniLuxApp.swift in Sources */,
+				API001 /* APIEndpoints.swift in Sources */,
+				API002 /* APIResponse.swift in Sources */,
+				API003 /* TechnitiumClient.swift in Sources */,
+				MDL001 /* Models.swift in Sources */,
+				SVC001 /* AuthService.swift in Sources */,
+				SVC002 /* ClusterService.swift in Sources */,
+				SVC003 /* KeychainService.swift in Sources */,
+				CMP001 /* ClusterNodePicker.swift in Sources */,
+				CMP002 /* GlassCard.swift in Sources */,
+				STY001 /* ColorPalette.swift in Sources */,
+				STY002 /* GlassStyle.swift in Sources */,
+				NAV001 /* MainTabView.swift in Sources */,
+				NAV002 /* SidebarView.swift in Sources */,
+				FTR001 /* LoginView.swift in Sources */,
+				FTR002 /* DashboardView.swift in Sources */,
+				FTR003 /* DashboardViewModel.swift in Sources */,
+				FTR004 /* ZonesView.swift in Sources */,
+				FTR005 /* BlockingView.swift in Sources */,
+				FTR006 /* CacheView.swift in Sources */,
+				FTR007 /* DHCPView.swift in Sources */,
+				FTR008 /* AppsView.swift in Sources */,
+				FTR009 /* LogsView.swift in Sources */,
+				FTR010 /* SettingsView.swift in Sources */,
+				FTR011 /* AdminView.swift in Sources */,
+				FTR012 /* NetworkView.swift in Sources */,
+				FTR013 /* DNSClientView.swift in Sources */,
+				FTR014 /* ProfileView.swift in Sources */,
+				FTR015 /* AboutView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		DBG001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		REL001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		DBG002 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TechniLux/Resources/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TechniLux;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.technilux.ios;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		REL002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TechniLux/Resources/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TechniLux;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.technilux.ios;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		CFG001 /* Build configuration list for PBXNativeTarget "TechniLux" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DBG002 /* Debug */,
+				REL002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CFG002 /* Build configuration list for PBXProject "TechniLux" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DBG001 /* Debug */,
+				REL001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = PRJ001 /* Project object */;
+}
