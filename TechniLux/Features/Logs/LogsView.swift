@@ -505,7 +505,7 @@ struct LogFilesSheet: View {
                             VStack(alignment: .leading) {
                                 Text(file.fileName)
                                     .font(.subheadline)
-                                Text(formatSize(file.size))
+                                Text(file.size)
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
@@ -536,14 +536,6 @@ struct LogFilesSheet: View {
         }
     }
 
-    private func formatSize(_ bytes: Int) -> String {
-        if bytes >= 1_000_000 {
-            return String(format: "%.1f MB", Double(bytes) / 1_000_000)
-        } else if bytes >= 1_000 {
-            return String(format: "%.1f KB", Double(bytes) / 1_000)
-        }
-        return "\(bytes) bytes"
-    }
 }
 
 #Preview("Logs View") {

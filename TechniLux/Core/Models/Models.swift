@@ -657,7 +657,7 @@ struct DnsResolveResponse: Decodable {
 struct DnsMetadata: Decodable {
     let nameServer: String?
     let queryProtocol: String?
-    let datagramSize: Int?
+    let datagramSize: String?  // API returns string like "512 bytes"
     let roundTripTime: String?
 
     enum CodingKeys: String, CodingKey {

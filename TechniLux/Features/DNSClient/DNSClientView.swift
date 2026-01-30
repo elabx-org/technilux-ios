@@ -216,7 +216,7 @@ struct DNSClientView: View {
                         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
                             InfoRow(label: "Name Server", value: metadata.nameServer ?? "Unknown")
                             InfoRow(label: "Protocol", value: metadata.queryProtocol ?? "Unknown")
-                            InfoRow(label: "Response Size", value: "\(metadata.datagramSize ?? 0) bytes")
+                            InfoRow(label: "Response Size", value: metadata.datagramSize ?? "N/A")
                             InfoRow(label: "Round Trip", value: metadata.roundTripTime ?? "N/A")
                         }
                     }
