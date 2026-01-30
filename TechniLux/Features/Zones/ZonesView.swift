@@ -53,7 +53,7 @@ final class ZonesViewModel {
 
     func toggleZone(_ zone: Zone) async {
         do {
-            if zone.disabled {
+            if zone.isDisabled {
                 try await client.enableZone(name: zone.name, node: cluster.nodeParam)
             } else {
                 try await client.disableZone(name: zone.name, node: cluster.nodeParam)
@@ -153,11 +153,11 @@ struct ZonesView: View {
                         }
                     } label: {
                         Label(
-                            zone.disabled ? "Enable" : "Disable",
-                            systemImage: zone.disabled ? "checkmark.circle" : "xmark.circle"
+                            zone.isDisabled ? "Enable" : "Disable",
+                            systemImage: zone.isDisabled ? "checkmark.circle" : "xmark.circle"
                         )
                     }
-                    .tint(zone.disabled ? .green : .orange)
+                    .tint(zone.isDisabled ? .green : .orange)
                 }
                 .contextMenu {
                     Button {
@@ -184,8 +184,8 @@ struct ZonesView: View {
                         }
                     } label: {
                         Label(
-                            zone.disabled ? "Enable" : "Disable",
-                            systemImage: zone.disabled ? "checkmark.circle" : "xmark.circle"
+                            zone.isDisabled ? "Enable" : "Disable",
+                            systemImage: zone.isDisabled ? "checkmark.circle" : "xmark.circle"
                         )
                     }
 
@@ -226,9 +226,9 @@ struct ZoneRow: View {
                 HStack {
                     Text(zone.name)
                         .font(.headline)
-                        .foregroundStyle(zone.disabled ? .secondary : .primary)
+                        .foregroundStyle(zone.isDisabled ? .secondary : .primary)
 
-                    if zone.disabled {
+                    if zone.isDisabled {
                         StatusBadge(text: "Disabled", color: .orange)
                     }
                 }
@@ -236,7 +236,7 @@ struct ZoneRow: View {
                 HStack(spacing: 8) {
                     StatusBadge(text: zone.type.rawValue, color: .techniluxPrimary)
 
-                    if zone.dnssecStatus != "Unsigned" {
+                    if zone.dnssec != "Unsigned" {
                         StatusBadge(text: "DNSSEC", color: .green)
                     }
                 }

@@ -212,7 +212,6 @@ struct LogsView: View {
         }
         .padding()
         .background(.ultraThinMaterial)
-        .glassEffect()
     }
 
     private var logsList: some View {

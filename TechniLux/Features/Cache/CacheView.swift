@@ -201,7 +201,6 @@ struct CacheView: View {
         }
         .padding()
         .background(.ultraThinMaterial)
-        .glassEffect()
     }
 }
 

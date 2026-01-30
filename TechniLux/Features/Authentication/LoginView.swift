@@ -6,22 +6,26 @@ struct LoginView: View {
     @State private var serverURL = ""
     @State private var username = ""
     @State private var password = ""
-    @State private var rememberServer = true
+    @State private var rememberCredentials = true
     @State private var showPassword = false
 
     @AppStorage("lastServerURL") private var lastServerURL = ""
+    @AppStorage("lastUsername") private var lastUsername = ""
 
     var body: some View {
         GeometryReader { geometry in
             ScrollView {
                 VStack(spacing: 32) {
-                    Spacer(minLength: 60)
+                    Spacer(minLength: 40)
 
                     // Logo and Title
                     VStack(spacing: 16) {
-                        Image(systemName: "server.rack")
-                            .font(.system(size: 64))
-                            .foregroundStyle(.techniluxPrimary)
+                        Image("TechniLuxLogo")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 100, height: 100)
+                            .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                            .shadow(color: .black.opacity(0.2), radius: 10, x: 0, y: 5)
 
                         Text("TechniLux")
                             .font(.largeTitle)
@@ -30,6 +34,11 @@ struct LoginView: View {
                         Text("DNS Server Management")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
+                    }
+
+                    // Biometric Login Button (if available)
+                    if auth.biometricEnabled && auth.hasSavedCredentials {
+                        biometricLoginSection
                     }
 
                     // Login Form
@@ -100,13 +109,18 @@ struct LoginView: View {
                             .glassBackground()
                         }
 
-                        // Remember server toggle
-                        Toggle(isOn: $rememberServer) {
-                            Text("Remember server URL")
+                        // Remember credentials toggle
+                        if auth.canUseBiometrics {
+                            Toggle(isOn: $rememberCredentials) {
+                                HStack {
+                                    Image(systemName: auth.biometricType.iconName)
+                                    Text("Enable \(auth.biometricType.name)")
+                                }
                                 .font(.subheadline)
+                            }
+                            .tint(.techniluxPrimary)
+                            .padding(.horizontal, 4)
                         }
-                        .tint(.techniluxPrimary)
-                        .padding(.horizontal, 4)
 
                         // Error message
                         if let error = auth.error {
@@ -146,7 +160,7 @@ struct LoginView: View {
                     }
                     .padding(.horizontal)
 
-                    Spacer(minLength: 60)
+                    Spacer(minLength: 40)
 
                     // Footer
                     VStack(spacing: 8) {
@@ -167,6 +181,40 @@ struct LoginView: View {
             if !lastServerURL.isEmpty {
                 serverURL = lastServerURL
             }
+            if !lastUsername.isEmpty {
+                username = lastUsername
+            }
+        }
+        .task {
+            // Auto-login with biometrics if available
+            if auth.biometricEnabled && auth.hasSavedCredentials {
+                try? await auth.loginWithBiometrics()
+            }
+        }
+    }
+
+    private var biometricLoginSection: some View {
+        VStack(spacing: 12) {
+            Button {
+                Task {
+                    try? await auth.loginWithBiometrics()
+                }
+            } label: {
+                HStack {
+                    Image(systemName: auth.biometricType.iconName)
+                        .font(.title2)
+                    Text("Sign in with \(auth.biometricType.name)")
+                        .fontWeight(.medium)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+            }
+            .buttonStyle(.outlined)
+            .padding(.horizontal)
+
+            Text("or sign in with credentials")
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
     }
 
@@ -188,13 +236,13 @@ struct LoginView: View {
             try await auth.login(
                 serverURL: cleanURL,
                 username: username.trimmingCharacters(in: .whitespaces),
-                password: password
+                password: password,
+                saveCredentials: rememberCredentials && auth.canUseBiometrics
             )
 
-            // Save server URL if requested
-            if rememberServer {
-                lastServerURL = cleanURL
-            }
+            // Save server URL and username for next time
+            lastServerURL = cleanURL
+            lastUsername = username
 
             // Load cluster state after login
             await ClusterService.shared.load()

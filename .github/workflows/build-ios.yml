@@ -48,30 +48,16 @@ jobs:
           source .venv/bin/activate
           pip install pillow
           python3 << 'EOF'
-          from PIL import Image, ImageDraw, ImageFont
+          from PIL import Image
 
-          # Create 1024x1024 RGBA icon with TechniLux teal color
-          size = 1024
-          img = Image.new('RGBA', (size, size), (29, 106, 100, 255))
-          draw = ImageDraw.Draw(img)
+          # Load and resize TechniLux logo to 1024x1024 for App Icon
+          logo = Image.open('TechniLux/Resources/TechniLuxLogo.png')
+          logo = logo.convert('RGBA')
 
-          # Add a simple "T" letter in white
-          try:
-              font = ImageFont.truetype('/System/Library/Fonts/Helvetica.ttc', 600)
-          except:
-              font = ImageFont.load_default()
-
-          # Center the text
-          text = "T"
-          bbox = draw.textbbox((0, 0), text, font=font)
-          text_width = bbox[2] - bbox[0]
-          text_height = bbox[3] - bbox[1]
-          x = (size - text_width) // 2
-          y = (size - text_height) // 2 - 50
-          draw.text((x, y), text, fill=(255, 255, 255, 255), font=font)
-
-          img.save('TechniLux/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png')
-          print('Generated 1024x1024 RGBA app icon')
+          # Resize to 1024x1024
+          icon = logo.resize((1024, 1024), Image.Resampling.LANCZOS)
+          icon.save('TechniLux/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png')
+          print('Generated 1024x1024 app icon from TechniLux logo')
           EOF
 
       - name: Get version

@@ -143,13 +143,13 @@ enum ZoneType: String, Codable, CaseIterable {
 struct Zone: Decodable, Identifiable {
     let name: String
     let type: ZoneType
-    let `internal`: Bool
-    let dnssecStatus: String
+    let `internal`: Bool?
+    let dnssecStatus: String?
     let soaSerial: Int?
     let expiry: String?
     let isExpired: Bool?
     let lastModified: String?
-    let disabled: Bool
+    let disabled: Bool?
     let catalog: String?
     let syncFailed: Bool?
     let notifyFailed: Bool?
@@ -157,6 +157,10 @@ struct Zone: Decodable, Identifiable {
     let validationFailed: Bool?
 
     var id: String { name }
+
+    var isDisabled: Bool { disabled ?? false }
+    var isInternal: Bool { `internal` ?? false }
+    var dnssec: String { dnssecStatus ?? "Unsigned" }
 }
 
 struct ZonesResponse: Decodable {

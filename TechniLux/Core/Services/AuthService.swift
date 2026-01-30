@@ -12,6 +12,24 @@ final class AuthService {
     var isLoading = false
     var error: String?
 
+    // Biometric settings
+    var biometricEnabled: Bool {
+        get { UserDefaults.standard.bool(forKey: "biometricEnabled") }
+        set { UserDefaults.standard.set(newValue, forKey: "biometricEnabled") }
+    }
+
+    var hasSavedCredentials: Bool {
+        keychain.hasSavedCredentials()
+    }
+
+    var canUseBiometrics: Bool {
+        keychain.canUseBiometrics()
+    }
+
+    var biometricType: BiometricType {
+        keychain.biometricType()
+    }
+
     private let keychain = KeychainService.shared
     private let client = TechnitiumClient.shared
 
@@ -19,7 +37,7 @@ final class AuthService {
 
     // MARK: - Authentication
 
-    func login(serverURL: String, username: String, password: String) async throws {
+    func login(serverURL: String, username: String, password: String, saveCredentials: Bool = false) async throws {
         isLoading = true
         error = nil
         defer { isLoading = false }
@@ -47,8 +65,41 @@ final class AuthService {
         )
 
         try keychain.saveSession(session)
+
+        // Save credentials for biometric login if requested
+        if saveCredentials && canUseBiometrics {
+            try keychain.saveCredentials(serverURL: serverURL, username: username, password: password)
+            biometricEnabled = true
+        }
+
         currentSession = session
         isAuthenticated = true
+    }
+
+    func loginWithBiometrics() async throws {
+        guard biometricEnabled, hasSavedCredentials else {
+            throw AuthError.biometricsNotAvailable
+        }
+
+        // Authenticate with biometrics
+        let authenticated = try await keychain.authenticateWithBiometrics()
+
+        guard authenticated else {
+            throw AuthError.biometricsFailed
+        }
+
+        // Load saved credentials
+        guard let credentials = keychain.loadCredentials() else {
+            throw AuthError.noSavedCredentials
+        }
+
+        // Login with saved credentials
+        try await login(
+            serverURL: credentials.serverURL,
+            username: credentials.username,
+            password: credentials.password,
+            saveCredentials: false
+        )
     }
 
     func logout() {
@@ -56,6 +107,13 @@ final class AuthService {
         keychain.deleteSession()
         currentSession = nil
         isAuthenticated = false
+        // Don't delete credentials - user may want to use biometrics next time
+    }
+
+    func logoutAndClearCredentials() {
+        logout()
+        keychain.deleteCredentials()
+        biometricEnabled = false
     }
 
     func restoreSession() async {
@@ -113,6 +171,9 @@ enum AuthError: LocalizedError {
     case invalidServerURL
     case loginFailed
     case notAuthenticated
+    case biometricsNotAvailable
+    case biometricsFailed
+    case noSavedCredentials
 
     var errorDescription: String? {
         switch self {
@@ -122,6 +183,12 @@ enum AuthError: LocalizedError {
             return "Login failed"
         case .notAuthenticated:
             return "Not authenticated"
+        case .biometricsNotAvailable:
+            return "Biometric authentication not available"
+        case .biometricsFailed:
+            return "Biometric authentication failed"
+        case .noSavedCredentials:
+            return "No saved credentials found"
         }
     }
 }

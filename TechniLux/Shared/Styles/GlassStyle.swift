@@ -1,58 +1,62 @@
 import SwiftUI
 
-/// iOS 26 Liquid Glass UI style modifiers
+/// iOS 26 Glass UI style modifiers
+/// Using materials with subtle borders for clean glass appearance
 extension View {
-    /// Apply liquid glass card styling with depth and refraction
+    /// Apply glass card styling
     func glassCard() -> some View {
         self
             .background(.ultraThinMaterial)
-            .glassEffect()
-            .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-            .shadow(color: .black.opacity(0.1), radius: 12, x: 0, y: 6)
+            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .stroke(.white.opacity(0.1), lineWidth: 0.5)
+            )
+            .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 4)
     }
 
-    /// Apply glass card with subtle border highlight
+    /// Apply glass card with more visible border
     func glassCardWithBorder() -> some View {
         self
             .background(.ultraThinMaterial)
-            .glassEffect()
-            .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
             .overlay(
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
                     .stroke(.white.opacity(0.2), lineWidth: 0.5)
             )
-            .shadow(color: .black.opacity(0.1), radius: 12, x: 0, y: 6)
+            .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
     }
 
     /// Apply glass button styling
     func glassButton() -> some View {
         self
             .background(.regularMaterial)
-            .glassEffect()
-            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 
     /// Apply subtle glass background for inputs
     func glassBackground() -> some View {
         self
             .background(.thinMaterial)
-            .glassEffect()
-            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 
     /// Apply prominent glass effect for hero elements
     func glassHero() -> some View {
         self
             .background(.thickMaterial)
-            .glassEffect()
-            .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
-            .shadow(color: .black.opacity(0.15), radius: 20, x: 0, y: 10)
+            .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 28, style: .continuous)
+                    .stroke(.white.opacity(0.15), lineWidth: 0.5)
+            )
+            .shadow(color: .black.opacity(0.12), radius: 16, x: 0, y: 8)
     }
 }
 
 // MARK: - Custom Button Styles
 
-/// iOS 26 Liquid Glass button style
+/// Primary button style with TechniLux teal color
 struct GlassButtonStyle: ButtonStyle {
     var isDestructive: Bool = false
 
@@ -66,25 +70,24 @@ struct GlassButtonStyle: ButtonStyle {
                     : Color.techniluxPrimary.opacity(configuration.isPressed ? 0.8 : 1)
             )
             .foregroundStyle(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             .scaleEffect(configuration.isPressed ? 0.97 : 1)
             .animation(.spring(response: 0.3, dampingFraction: 0.7), value: configuration.isPressed)
     }
 }
 
-/// Outlined glass button style
+/// Outlined button style with material background
 struct OutlinedButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .padding(.horizontal, 20)
             .padding(.vertical, 12)
             .background(.ultraThinMaterial)
-            .glassEffect()
             .overlay(
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
                     .stroke(Color.primary.opacity(0.15), lineWidth: 1)
             )
-            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             .scaleEffect(configuration.isPressed ? 0.97 : 1)
             .animation(.spring(response: 0.3, dampingFraction: 0.7), value: configuration.isPressed)
     }
@@ -111,13 +114,9 @@ struct StatusBadge: View {
             .fontWeight(.semibold)
             .padding(.horizontal, 10)
             .padding(.vertical, 5)
-            .background(color.opacity(0.12))
+            .background(color.opacity(0.15))
             .foregroundStyle(color)
             .clipShape(Capsule())
-            .overlay(
-                Capsule()
-                    .stroke(color.opacity(0.25), lineWidth: 0.5)
-            )
     }
 }
 
