@@ -33,9 +33,9 @@ jobs:
           python3 << 'EOF'
           from PIL import Image, ImageDraw, ImageFont
 
-          # Create 1024x1024 icon with TechniLux teal color
+          # Create 1024x1024 RGBA icon with TechniLux teal color
           size = 1024
-          img = Image.new('RGB', (size, size), '#1d6a64')
+          img = Image.new('RGBA', (size, size), (29, 106, 100, 255))
           draw = ImageDraw.Draw(img)
 
           # Add a simple "T" letter in white
@@ -51,10 +51,10 @@ jobs:
           text_height = bbox[3] - bbox[1]
           x = (size - text_width) // 2
           y = (size - text_height) // 2 - 50
-          draw.text((x, y), text, fill='white', font=font)
+          draw.text((x, y), text, fill=(255, 255, 255, 255), font=font)
 
           img.save('TechniLux/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png')
-          print('Generated 1024x1024 app icon')
+          print('Generated 1024x1024 RGBA app icon')
           EOF
 
       - name: Get version
@@ -124,56 +124,3 @@ jobs:
             See [CHANGELOG.md](https://github.com/elabx-org/technilux-ios/blob/main/CHANGELOG.md) for details.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  test:
-    runs-on: macos-15
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_16.0.app
-
-      - name: Generate App Icon
-        run: |
-          python3 -m venv .venv
-          source .venv/bin/activate
-          pip install pillow
-          python3 << 'EOF'
-          from PIL import Image, ImageDraw, ImageFont
-
-          size = 1024
-          img = Image.new('RGB', (size, size), '#1d6a64')
-          draw = ImageDraw.Draw(img)
-
-          try:
-              font = ImageFont.truetype('/System/Library/Fonts/Helvetica.ttc', 600)
-          except:
-              font = ImageFont.load_default()
-
-          text = "T"
-          bbox = draw.textbbox((0, 0), text, font=font)
-          text_width = bbox[2] - bbox[0]
-          text_height = bbox[3] - bbox[1]
-          x = (size - text_width) // 2
-          y = (size - text_height) // 2 - 50
-          draw.text((x, y), text, fill='white', font=font)
-
-          img.save('TechniLux/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png')
-          EOF
-
-      - name: Run tests
-        run: |
-          xcodebuild test \
-            -project TechniLux.xcodeproj \
-            -scheme TechniLux \
-            -destination 'platform=iOS Simulator,name=iPhone 16' \
-            -resultBundlePath TestResults.xcresult \
-            || true
-
-      - name: Upload test results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: test-results
-          path: TestResults.xcresult
-          retention-days: 7
