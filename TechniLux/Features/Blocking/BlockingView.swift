@@ -358,13 +358,14 @@ struct BlockingView: View {
         emptyDescription: String,
         onDelete: @escaping (String) -> Void
     ) -> some View {
-        if domains.isEmpty {
+        if domains.isEmpty && !viewModel.isLoading {
             EmptyStateView(
                 icon: "list.bullet",
                 title: emptyTitle,
                 description: emptyDescription
             )
-        } else {
+            .frame(maxHeight: .infinity)
+        } else if !domains.isEmpty {
             List {
                 ForEach(domains, id: \.self) { domain in
                     Text(domain)
