@@ -127,20 +127,7 @@ struct NodeStatusRow: View {
                 .frame(width: 10, height: 10)
 
             VStack(alignment: .leading, spacing: 2) {
-                HStack {
-                    Text(node.name)
-                        .font(.subheadline)
-                        .fontWeight(isSelected ? .semibold : .regular)
-
-                    if node.type == "Primary" {
-                        StatusBadge(text: "Primary", color: .techniluxPrimary)
-                    }
-
-                    if node.state == "Self" {
-                        StatusBadge(text: "Self", color: .techniluxInfo)
-                    }
-                }
-
+                nodeNameRow
                 Text(node.url)
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -155,8 +142,29 @@ struct NodeStatusRow: View {
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 12)
-        .background(isSelected ? Color.techniluxPrimary.opacity(0.1) : Color.clear)
+        .background(backgroundColor)
         .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    @ViewBuilder
+    private var nodeNameRow: some View {
+        HStack {
+            Text(node.name)
+                .font(.subheadline)
+                .fontWeight(isSelected ? .semibold : .regular)
+
+            if node.type == "Primary" {
+                StatusBadge(text: "Primary", color: .techniluxPrimary)
+            }
+
+            if node.state == "Self" {
+                StatusBadge(text: "Self", color: .techniluxInfo)
+            }
+        }
+    }
+
+    private var backgroundColor: Color {
+        isSelected ? Color.techniluxPrimary.opacity(0.1) : Color.clear
     }
 
     private var statusColor: Color {
