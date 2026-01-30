@@ -7,96 +7,75 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		/* App */
-		APP001 /* TechniLuxApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC001; };
-
-		/* Core/API */
-		API001 /* APIEndpoints.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC002; };
-		API002 /* APIResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC003; };
-		API003 /* TechnitiumClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC004; };
-
-		/* Core/Models */
-		MDL001 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC005; };
-
-		/* Core/Services */
-		SVC001 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC006; };
-		SVC002 /* ClusterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC007; };
-		SVC003 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC008; };
-
-		/* Shared/Components */
-		CMP001 /* ClusterNodePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC009; };
-		CMP002 /* GlassCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC010; };
-
-		/* Shared/Styles */
-		STY001 /* ColorPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC011; };
-		STY002 /* GlassStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC012; };
-
-		/* Shared/Navigation */
-		NAV001 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC013; };
-		NAV002 /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC014; };
-
-		/* Features */
-		FTR001 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC015; };
-		FTR002 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC016; };
-		FTR003 /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC017; };
-		FTR004 /* ZonesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC018; };
-		FTR005 /* BlockingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC019; };
-		FTR006 /* CacheView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC020; };
-		FTR007 /* DHCPView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC021; };
-		FTR008 /* AppsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC022; };
-		FTR009 /* LogsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC023; };
-		FTR010 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC024; };
-		FTR011 /* AdminView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC025; };
-		FTR012 /* NetworkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC026; };
-		FTR013 /* DNSClientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC027; };
-		FTR014 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC028; };
-		FTR015 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRC029; };
-
-		/* Resources */
-		RES001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = RES001F; };
+		8A1B2C3D4E5F6001 /* TechniLuxApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7001; };
+		8A1B2C3D4E5F6002 /* APIEndpoints.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7002; };
+		8A1B2C3D4E5F6003 /* APIResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7003; };
+		8A1B2C3D4E5F6004 /* TechnitiumClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7004; };
+		8A1B2C3D4E5F6005 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7005; };
+		8A1B2C3D4E5F6006 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7006; };
+		8A1B2C3D4E5F6007 /* ClusterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7007; };
+		8A1B2C3D4E5F6008 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7008; };
+		8A1B2C3D4E5F6009 /* ClusterNodePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7009; };
+		8A1B2C3D4E5F600A /* GlassCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F700A; };
+		8A1B2C3D4E5F600B /* ColorPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F700B; };
+		8A1B2C3D4E5F600C /* GlassStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F700C; };
+		8A1B2C3D4E5F600D /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F700D; };
+		8A1B2C3D4E5F600E /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F700E; };
+		8A1B2C3D4E5F600F /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F700F; };
+		8A1B2C3D4E5F6010 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7010; };
+		8A1B2C3D4E5F6011 /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7011; };
+		8A1B2C3D4E5F6012 /* ZonesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7012; };
+		8A1B2C3D4E5F6013 /* BlockingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7013; };
+		8A1B2C3D4E5F6014 /* CacheView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7014; };
+		8A1B2C3D4E5F6015 /* DHCPView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7015; };
+		8A1B2C3D4E5F6016 /* AppsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7016; };
+		8A1B2C3D4E5F6017 /* LogsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7017; };
+		8A1B2C3D4E5F6018 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7018; };
+		8A1B2C3D4E5F6019 /* AdminView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7019; };
+		8A1B2C3D4E5F601A /* NetworkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F701A; };
+		8A1B2C3D4E5F601B /* DNSClientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F701B; };
+		8A1B2C3D4E5F601C /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F701C; };
+		8A1B2C3D4E5F601D /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F701D; };
+		8A1B2C3D4E5F601E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F701E; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		PROD001 /* TechniLux.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TechniLux.app; sourceTree = BUILT_PRODUCTS_DIR; };
-
-		/* Source Files */
-		SRC001 /* TechniLuxApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TechniLuxApp.swift; sourceTree = "<group>"; };
-		SRC002 /* APIEndpoints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIEndpoints.swift; sourceTree = "<group>"; };
-		SRC003 /* APIResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIResponse.swift; sourceTree = "<group>"; };
-		SRC004 /* TechnitiumClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TechnitiumClient.swift; sourceTree = "<group>"; };
-		SRC005 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
-		SRC006 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
-		SRC007 /* ClusterService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClusterService.swift; sourceTree = "<group>"; };
-		SRC008 /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
-		SRC009 /* ClusterNodePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClusterNodePicker.swift; sourceTree = "<group>"; };
-		SRC010 /* GlassCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassCard.swift; sourceTree = "<group>"; };
-		SRC011 /* ColorPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPalette.swift; sourceTree = "<group>"; };
-		SRC012 /* GlassStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassStyle.swift; sourceTree = "<group>"; };
-		SRC013 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
-		SRC014 /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarView.swift; sourceTree = "<group>"; };
-		SRC015 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
-		SRC016 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
-		SRC017 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
-		SRC018 /* ZonesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZonesView.swift; sourceTree = "<group>"; };
-		SRC019 /* BlockingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockingView.swift; sourceTree = "<group>"; };
-		SRC020 /* CacheView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheView.swift; sourceTree = "<group>"; };
-		SRC021 /* DHCPView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DHCPView.swift; sourceTree = "<group>"; };
-		SRC022 /* AppsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppsView.swift; sourceTree = "<group>"; };
-		SRC023 /* LogsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsView.swift; sourceTree = "<group>"; };
-		SRC024 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		SRC025 /* AdminView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminView.swift; sourceTree = "<group>"; };
-		SRC026 /* NetworkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkView.swift; sourceTree = "<group>"; };
-		SRC027 /* DNSClientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DNSClientView.swift; sourceTree = "<group>"; };
-		SRC028 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
-		SRC029 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
-
-		/* Resources */
-		RES001F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		RES002F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8A1B2C3D4E5F8001 /* TechniLux.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TechniLux.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8A1B2C3D4E5F7001 /* TechniLuxApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TechniLuxApp.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F7002 /* APIEndpoints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIEndpoints.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F7003 /* APIResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIResponse.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F7004 /* TechnitiumClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TechnitiumClient.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F7005 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F7006 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F7007 /* ClusterService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClusterService.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F7008 /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F7009 /* ClusterNodePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClusterNodePicker.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F700A /* GlassCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassCard.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F700B /* ColorPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPalette.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F700C /* GlassStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassStyle.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F700D /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F700E /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarView.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F700F /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F7010 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F7011 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F7012 /* ZonesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZonesView.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F7013 /* BlockingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockingView.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F7014 /* CacheView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheView.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F7015 /* DHCPView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DHCPView.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F7016 /* AppsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppsView.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F7017 /* LogsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsView.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F7018 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F7019 /* AdminView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminView.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F701A /* NetworkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkView.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F701B /* DNSClientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DNSClientView.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F701C /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F701D /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F701E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		8A1B2C3D4E5F701F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		FRM001 /* Frameworks */ = {
+		8A1B2C3D4E5F9001 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -106,256 +85,256 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		ROOT /* Root */ = {
+		8A1B2C3D4E5FA001 = {
 			isa = PBXGroup;
 			children = (
-				GRP001 /* TechniLux */,
-				GRP100 /* Products */,
+				8A1B2C3D4E5FA002 /* TechniLux */,
+				8A1B2C3D4E5FA003 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		GRP100 /* Products */ = {
+		8A1B2C3D4E5FA003 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				PROD001 /* TechniLux.app */,
+				8A1B2C3D4E5F8001 /* TechniLux.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		GRP001 /* TechniLux */ = {
+		8A1B2C3D4E5FA002 /* TechniLux */ = {
 			isa = PBXGroup;
 			children = (
-				GRP002 /* App */,
-				GRP003 /* Core */,
-				GRP010 /* Features */,
-				GRP030 /* Shared */,
-				GRP040 /* Resources */,
+				8A1B2C3D4E5FA004 /* App */,
+				8A1B2C3D4E5FA005 /* Core */,
+				8A1B2C3D4E5FA010 /* Features */,
+				8A1B2C3D4E5FA030 /* Shared */,
+				8A1B2C3D4E5FA040 /* Resources */,
 			);
 			path = TechniLux;
 			sourceTree = "<group>";
 		};
-		GRP002 /* App */ = {
+		8A1B2C3D4E5FA004 /* App */ = {
 			isa = PBXGroup;
 			children = (
-				SRC001 /* TechniLuxApp.swift */,
+				8A1B2C3D4E5F7001 /* TechniLuxApp.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
 		};
-		GRP003 /* Core */ = {
+		8A1B2C3D4E5FA005 /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				GRP004 /* API */,
-				GRP005 /* Models */,
-				GRP006 /* Services */,
+				8A1B2C3D4E5FA006 /* API */,
+				8A1B2C3D4E5FA007 /* Models */,
+				8A1B2C3D4E5FA008 /* Services */,
 			);
 			path = Core;
 			sourceTree = "<group>";
 		};
-		GRP004 /* API */ = {
+		8A1B2C3D4E5FA006 /* API */ = {
 			isa = PBXGroup;
 			children = (
-				SRC002 /* APIEndpoints.swift */,
-				SRC003 /* APIResponse.swift */,
-				SRC004 /* TechnitiumClient.swift */,
+				8A1B2C3D4E5F7002 /* APIEndpoints.swift */,
+				8A1B2C3D4E5F7003 /* APIResponse.swift */,
+				8A1B2C3D4E5F7004 /* TechnitiumClient.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
 		};
-		GRP005 /* Models */ = {
+		8A1B2C3D4E5FA007 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				SRC005 /* Models.swift */,
+				8A1B2C3D4E5F7005 /* Models.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
 		};
-		GRP006 /* Services */ = {
+		8A1B2C3D4E5FA008 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				SRC006 /* AuthService.swift */,
-				SRC007 /* ClusterService.swift */,
-				SRC008 /* KeychainService.swift */,
+				8A1B2C3D4E5F7006 /* AuthService.swift */,
+				8A1B2C3D4E5F7007 /* ClusterService.swift */,
+				8A1B2C3D4E5F7008 /* KeychainService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
 		};
-		GRP010 /* Features */ = {
+		8A1B2C3D4E5FA010 /* Features */ = {
 			isa = PBXGroup;
 			children = (
-				GRP011 /* Authentication */,
-				GRP012 /* Dashboard */,
-				GRP013 /* Zones */,
-				GRP014 /* Blocking */,
-				GRP015 /* Cache */,
-				GRP016 /* DHCP */,
-				GRP017 /* Apps */,
-				GRP018 /* Logs */,
-				GRP019 /* Settings */,
-				GRP020 /* Admin */,
-				GRP021 /* Network */,
-				GRP022 /* DNSClient */,
-				GRP023 /* Profile */,
-				GRP024 /* About */,
+				8A1B2C3D4E5FA011 /* Authentication */,
+				8A1B2C3D4E5FA012 /* Dashboard */,
+				8A1B2C3D4E5FA013 /* Zones */,
+				8A1B2C3D4E5FA014 /* Blocking */,
+				8A1B2C3D4E5FA015 /* Cache */,
+				8A1B2C3D4E5FA016 /* DHCP */,
+				8A1B2C3D4E5FA017 /* Apps */,
+				8A1B2C3D4E5FA018 /* Logs */,
+				8A1B2C3D4E5FA019 /* Settings */,
+				8A1B2C3D4E5FA01A /* Admin */,
+				8A1B2C3D4E5FA01B /* Network */,
+				8A1B2C3D4E5FA01C /* DNSClient */,
+				8A1B2C3D4E5FA01D /* Profile */,
+				8A1B2C3D4E5FA01E /* About */,
 			);
 			path = Features;
 			sourceTree = "<group>";
 		};
-		GRP011 /* Authentication */ = {
+		8A1B2C3D4E5FA011 /* Authentication */ = {
 			isa = PBXGroup;
 			children = (
-				SRC015 /* LoginView.swift */,
+				8A1B2C3D4E5F700F /* LoginView.swift */,
 			);
 			path = Authentication;
 			sourceTree = "<group>";
 		};
-		GRP012 /* Dashboard */ = {
+		8A1B2C3D4E5FA012 /* Dashboard */ = {
 			isa = PBXGroup;
 			children = (
-				SRC016 /* DashboardView.swift */,
-				SRC017 /* DashboardViewModel.swift */,
+				8A1B2C3D4E5F7010 /* DashboardView.swift */,
+				8A1B2C3D4E5F7011 /* DashboardViewModel.swift */,
 			);
 			path = Dashboard;
 			sourceTree = "<group>";
 		};
-		GRP013 /* Zones */ = {
+		8A1B2C3D4E5FA013 /* Zones */ = {
 			isa = PBXGroup;
 			children = (
-				SRC018 /* ZonesView.swift */,
+				8A1B2C3D4E5F7012 /* ZonesView.swift */,
 			);
 			path = Zones;
 			sourceTree = "<group>";
 		};
-		GRP014 /* Blocking */ = {
+		8A1B2C3D4E5FA014 /* Blocking */ = {
 			isa = PBXGroup;
 			children = (
-				SRC019 /* BlockingView.swift */,
+				8A1B2C3D4E5F7013 /* BlockingView.swift */,
 			);
 			path = Blocking;
 			sourceTree = "<group>";
 		};
-		GRP015 /* Cache */ = {
+		8A1B2C3D4E5FA015 /* Cache */ = {
 			isa = PBXGroup;
 			children = (
-				SRC020 /* CacheView.swift */,
+				8A1B2C3D4E5F7014 /* CacheView.swift */,
 			);
 			path = Cache;
 			sourceTree = "<group>";
 		};
-		GRP016 /* DHCP */ = {
+		8A1B2C3D4E5FA016 /* DHCP */ = {
 			isa = PBXGroup;
 			children = (
-				SRC021 /* DHCPView.swift */,
+				8A1B2C3D4E5F7015 /* DHCPView.swift */,
 			);
 			path = DHCP;
 			sourceTree = "<group>";
 		};
-		GRP017 /* Apps */ = {
+		8A1B2C3D4E5FA017 /* Apps */ = {
 			isa = PBXGroup;
 			children = (
-				SRC022 /* AppsView.swift */,
+				8A1B2C3D4E5F7016 /* AppsView.swift */,
 			);
 			path = Apps;
 			sourceTree = "<group>";
 		};
-		GRP018 /* Logs */ = {
+		8A1B2C3D4E5FA018 /* Logs */ = {
 			isa = PBXGroup;
 			children = (
-				SRC023 /* LogsView.swift */,
+				8A1B2C3D4E5F7017 /* LogsView.swift */,
 			);
 			path = Logs;
 			sourceTree = "<group>";
 		};
-		GRP019 /* Settings */ = {
+		8A1B2C3D4E5FA019 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				SRC024 /* SettingsView.swift */,
+				8A1B2C3D4E5F7018 /* SettingsView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
 		};
-		GRP020 /* Admin */ = {
+		8A1B2C3D4E5FA01A /* Admin */ = {
 			isa = PBXGroup;
 			children = (
-				SRC025 /* AdminView.swift */,
+				8A1B2C3D4E5F7019 /* AdminView.swift */,
 			);
 			path = Admin;
 			sourceTree = "<group>";
 		};
-		GRP021 /* Network */ = {
+		8A1B2C3D4E5FA01B /* Network */ = {
 			isa = PBXGroup;
 			children = (
-				SRC026 /* NetworkView.swift */,
+				8A1B2C3D4E5F701A /* NetworkView.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
 		};
-		GRP022 /* DNSClient */ = {
+		8A1B2C3D4E5FA01C /* DNSClient */ = {
 			isa = PBXGroup;
 			children = (
-				SRC027 /* DNSClientView.swift */,
+				8A1B2C3D4E5F701B /* DNSClientView.swift */,
 			);
 			path = DNSClient;
 			sourceTree = "<group>";
 		};
-		GRP023 /* Profile */ = {
+		8A1B2C3D4E5FA01D /* Profile */ = {
 			isa = PBXGroup;
 			children = (
-				SRC028 /* ProfileView.swift */,
+				8A1B2C3D4E5F701C /* ProfileView.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
 		};
-		GRP024 /* About */ = {
+		8A1B2C3D4E5FA01E /* About */ = {
 			isa = PBXGroup;
 			children = (
-				SRC029 /* AboutView.swift */,
+				8A1B2C3D4E5F701D /* AboutView.swift */,
 			);
 			path = About;
 			sourceTree = "<group>";
 		};
-		GRP030 /* Shared */ = {
+		8A1B2C3D4E5FA030 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
-				GRP031 /* Components */,
-				GRP032 /* Styles */,
-				GRP033 /* Navigation */,
+				8A1B2C3D4E5FA031 /* Components */,
+				8A1B2C3D4E5FA032 /* Styles */,
+				8A1B2C3D4E5FA033 /* Navigation */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
 		};
-		GRP031 /* Components */ = {
+		8A1B2C3D4E5FA031 /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				SRC009 /* ClusterNodePicker.swift */,
-				SRC010 /* GlassCard.swift */,
+				8A1B2C3D4E5F7009 /* ClusterNodePicker.swift */,
+				8A1B2C3D4E5F700A /* GlassCard.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
 		};
-		GRP032 /* Styles */ = {
+		8A1B2C3D4E5FA032 /* Styles */ = {
 			isa = PBXGroup;
 			children = (
-				SRC011 /* ColorPalette.swift */,
-				SRC012 /* GlassStyle.swift */,
+				8A1B2C3D4E5F700B /* ColorPalette.swift */,
+				8A1B2C3D4E5F700C /* GlassStyle.swift */,
 			);
 			path = Styles;
 			sourceTree = "<group>";
 		};
-		GRP033 /* Navigation */ = {
+		8A1B2C3D4E5FA033 /* Navigation */ = {
 			isa = PBXGroup;
 			children = (
-				SRC013 /* MainTabView.swift */,
-				SRC014 /* SidebarView.swift */,
+				8A1B2C3D4E5F700D /* MainTabView.swift */,
+				8A1B2C3D4E5F700E /* SidebarView.swift */,
 			);
 			path = Navigation;
 			sourceTree = "<group>";
 		};
-		GRP040 /* Resources */ = {
+		8A1B2C3D4E5FA040 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				RES001F /* Assets.xcassets */,
-				RES002F /* Info.plist */,
+				8A1B2C3D4E5F701E /* Assets.xcassets */,
+				8A1B2C3D4E5F701F /* Info.plist */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -363,13 +342,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		TGT001 /* TechniLux */ = {
+		8A1B2C3D4E5FB001 /* TechniLux */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = CFG001 /* Build configuration list for PBXNativeTarget "TechniLux" */;
+			buildConfigurationList = 8A1B2C3D4E5FC001 /* Build configuration list for PBXNativeTarget "TechniLux" */;
 			buildPhases = (
-				SRC100 /* Sources */,
-				FRM001 /* Frameworks */,
-				RES100 /* Resources */,
+				8A1B2C3D4E5FB002 /* Sources */,
+				8A1B2C3D4E5F9001 /* Frameworks */,
+				8A1B2C3D4E5FB003 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -377,25 +356,25 @@
 			);
 			name = TechniLux;
 			productName = TechniLux;
-			productReference = PROD001 /* TechniLux.app */;
+			productReference = 8A1B2C3D4E5F8001 /* TechniLux.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		PRJ001 /* Project object */ = {
+		8A1B2C3D4E5FD001 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1600;
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
-					TGT001 = {
+					8A1B2C3D4E5FB001 = {
 						CreatedOnToolsVersion = 16.0;
 					};
 				};
 			};
-			buildConfigurationList = CFG002 /* Build configuration list for PBXProject "TechniLux" */;
+			buildConfigurationList = 8A1B2C3D4E5FC002 /* Build configuration list for PBXProject "TechniLux" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -403,68 +382,68 @@
 				en,
 				Base,
 			);
-			mainGroup = ROOT;
-			productRefGroup = GRP100 /* Products */;
+			mainGroup = 8A1B2C3D4E5FA001;
+			productRefGroup = 8A1B2C3D4E5FA003 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				TGT001 /* TechniLux */,
+				8A1B2C3D4E5FB001 /* TechniLux */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		RES100 /* Resources */ = {
+		8A1B2C3D4E5FB003 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				RES001 /* Assets.xcassets in Resources */,
+				8A1B2C3D4E5F601E /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		SRC100 /* Sources */ = {
+		8A1B2C3D4E5FB002 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				APP001 /* TechniLuxApp.swift in Sources */,
-				API001 /* APIEndpoints.swift in Sources */,
-				API002 /* APIResponse.swift in Sources */,
-				API003 /* TechnitiumClient.swift in Sources */,
-				MDL001 /* Models.swift in Sources */,
-				SVC001 /* AuthService.swift in Sources */,
-				SVC002 /* ClusterService.swift in Sources */,
-				SVC003 /* KeychainService.swift in Sources */,
-				CMP001 /* ClusterNodePicker.swift in Sources */,
-				CMP002 /* GlassCard.swift in Sources */,
-				STY001 /* ColorPalette.swift in Sources */,
-				STY002 /* GlassStyle.swift in Sources */,
-				NAV001 /* MainTabView.swift in Sources */,
-				NAV002 /* SidebarView.swift in Sources */,
-				FTR001 /* LoginView.swift in Sources */,
-				FTR002 /* DashboardView.swift in Sources */,
-				FTR003 /* DashboardViewModel.swift in Sources */,
-				FTR004 /* ZonesView.swift in Sources */,
-				FTR005 /* BlockingView.swift in Sources */,
-				FTR006 /* CacheView.swift in Sources */,
-				FTR007 /* DHCPView.swift in Sources */,
-				FTR008 /* AppsView.swift in Sources */,
-				FTR009 /* LogsView.swift in Sources */,
-				FTR010 /* SettingsView.swift in Sources */,
-				FTR011 /* AdminView.swift in Sources */,
-				FTR012 /* NetworkView.swift in Sources */,
-				FTR013 /* DNSClientView.swift in Sources */,
-				FTR014 /* ProfileView.swift in Sources */,
-				FTR015 /* AboutView.swift in Sources */,
+				8A1B2C3D4E5F6001 /* TechniLuxApp.swift in Sources */,
+				8A1B2C3D4E5F6002 /* APIEndpoints.swift in Sources */,
+				8A1B2C3D4E5F6003 /* APIResponse.swift in Sources */,
+				8A1B2C3D4E5F6004 /* TechnitiumClient.swift in Sources */,
+				8A1B2C3D4E5F6005 /* Models.swift in Sources */,
+				8A1B2C3D4E5F6006 /* AuthService.swift in Sources */,
+				8A1B2C3D4E5F6007 /* ClusterService.swift in Sources */,
+				8A1B2C3D4E5F6008 /* KeychainService.swift in Sources */,
+				8A1B2C3D4E5F6009 /* ClusterNodePicker.swift in Sources */,
+				8A1B2C3D4E5F600A /* GlassCard.swift in Sources */,
+				8A1B2C3D4E5F600B /* ColorPalette.swift in Sources */,
+				8A1B2C3D4E5F600C /* GlassStyle.swift in Sources */,
+				8A1B2C3D4E5F600D /* MainTabView.swift in Sources */,
+				8A1B2C3D4E5F600E /* SidebarView.swift in Sources */,
+				8A1B2C3D4E5F600F /* LoginView.swift in Sources */,
+				8A1B2C3D4E5F6010 /* DashboardView.swift in Sources */,
+				8A1B2C3D4E5F6011 /* DashboardViewModel.swift in Sources */,
+				8A1B2C3D4E5F6012 /* ZonesView.swift in Sources */,
+				8A1B2C3D4E5F6013 /* BlockingView.swift in Sources */,
+				8A1B2C3D4E5F6014 /* CacheView.swift in Sources */,
+				8A1B2C3D4E5F6015 /* DHCPView.swift in Sources */,
+				8A1B2C3D4E5F6016 /* AppsView.swift in Sources */,
+				8A1B2C3D4E5F6017 /* LogsView.swift in Sources */,
+				8A1B2C3D4E5F6018 /* SettingsView.swift in Sources */,
+				8A1B2C3D4E5F6019 /* AdminView.swift in Sources */,
+				8A1B2C3D4E5F601A /* NetworkView.swift in Sources */,
+				8A1B2C3D4E5F601B /* DNSClientView.swift in Sources */,
+				8A1B2C3D4E5F601C /* ProfileView.swift in Sources */,
+				8A1B2C3D4E5F601D /* AboutView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		DBG001 /* Debug */ = {
+		8A1B2C3D4E5FE001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -527,7 +506,7 @@
 			};
 			name = Debug;
 		};
-		REL001 /* Release */ = {
+		8A1B2C3D4E5FE002 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -583,7 +562,7 @@
 			};
 			name = Release;
 		};
-		DBG002 /* Debug */ = {
+		8A1B2C3D4E5FE003 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -618,7 +597,7 @@
 			};
 			name = Debug;
 		};
-		REL002 /* Release */ = {
+		8A1B2C3D4E5FE004 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -656,25 +635,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		CFG001 /* Build configuration list for PBXNativeTarget "TechniLux" */ = {
+		8A1B2C3D4E5FC001 /* Build configuration list for PBXNativeTarget "TechniLux" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				DBG002 /* Debug */,
-				REL002 /* Release */,
+				8A1B2C3D4E5FE003 /* Debug */,
+				8A1B2C3D4E5FE004 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		CFG002 /* Build configuration list for PBXProject "TechniLux" */ = {
+		8A1B2C3D4E5FC002 /* Build configuration list for PBXProject "TechniLux" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				DBG001 /* Debug */,
-				REL001 /* Release */,
+				8A1B2C3D4E5FE001 /* Debug */,
+				8A1B2C3D4E5FE002 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = PRJ001 /* Project object */;
+	rootObject = 8A1B2C3D4E5FD001 /* Project object */;
 }
