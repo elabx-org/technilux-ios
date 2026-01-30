@@ -24,12 +24,13 @@ final class BlockingViewModel {
         defer { isLoading = false }
 
         do {
-            async let allowed = client.listAllowedDomains(node: cluster.nodeParam)
-            async let blocked = client.listBlockedDomains(node: cluster.nodeParam)
+            // Use export endpoints like the web UI - they return plain text lists
+            async let allowed = client.exportAllowedDomains(node: cluster.nodeParam)
+            async let blocked = client.exportBlockedDomains(node: cluster.nodeParam)
 
-            let (allowedResponse, blockedResponse) = try await (allowed, blocked)
-            allowedDomains = allowedResponse.domainStrings
-            blockedDomains = blockedResponse.domainStrings
+            let (allowedList, blockedList) = try await (allowed, blocked)
+            allowedDomains = allowedList
+            blockedDomains = blockedList
         } catch {
             self.error = error.localizedDescription
         }

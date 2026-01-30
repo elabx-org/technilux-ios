@@ -524,6 +524,28 @@ final class TechnitiumClient: ObservableObject {
         return result
     }
 
+    /// Export blocked domains as array of strings (plain text endpoint, one domain per line)
+    func exportBlockedDomains(node: String? = nil) async throws -> [String] {
+        var params: [String: Any] = [:]
+        if let node { params["node"] = node }
+        let data = try await fetchRaw(.blockedExport, params: params)
+        guard let text = String(data: data, encoding: .utf8) else {
+            throw APIError.invalidResponse
+        }
+        return text.components(separatedBy: .newlines).filter { !$0.isEmpty }
+    }
+
+    /// Export allowed domains as array of strings (plain text endpoint, one domain per line)
+    func exportAllowedDomains(node: String? = nil) async throws -> [String] {
+        var params: [String: Any] = [:]
+        if let node { params["node"] = node }
+        let data = try await fetchRaw(.allowedExport, params: params)
+        guard let text = String(data: data, encoding: .utf8) else {
+            throw APIError.invalidResponse
+        }
+        return text.components(separatedBy: .newlines).filter { !$0.isEmpty }
+    }
+
     // MARK: - Cache
 
     func listCachedZones(domain: String = "", node: String? = nil) async throws -> CacheResponse {
@@ -874,9 +896,9 @@ final class TechnitiumClient: ObservableObject {
         if let eDnsClientSubnet { params["eDnsClientSubnet"] = eDnsClientSubnet }
         if importRecords { params["import"] = true }
 
-        // The DNS response is directly in the response field, not nested in a result
-        let response: ApiResponse<DnsResolveResponse> = try await request(.dnsClientResolve, params: params, node: node)
-        guard let result = response.response else {
+        // The DNS response is nested in a "result" key
+        let response: ApiResponse<DnsResolveWrapper> = try await request(.dnsClientResolve, params: params, node: node)
+        guard let wrapper = response.response, let result = wrapper.result else {
             throw APIError.invalidResponse
         }
         return result

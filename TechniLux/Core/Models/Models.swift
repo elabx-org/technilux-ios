@@ -606,6 +606,11 @@ struct ClusterStateResponse: Decodable {
 
 // MARK: - DNS Client
 
+/// Wrapper for the DNS resolve API response which nests the result in a "result" key
+struct DnsResolveWrapper: Decodable {
+    let result: DnsResolveResponse?
+}
+
 struct DnsResolveResponse: Decodable {
     // Direct properties from the response (PascalCase in API)
     let Metadata: DnsMetadata?
