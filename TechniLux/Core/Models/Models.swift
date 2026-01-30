@@ -430,6 +430,7 @@ struct AppStoreEntry: Decodable, Identifiable {
     let url: String
     let size: String
     let lastModified: String?
+    let schemaUrl: String?  // URL to UI schema JSON for dynamic config
 
     var id: String { name }
 }
@@ -839,4 +840,172 @@ struct ZonePermission: Identifiable, Equatable {
     static func format(_ permissions: [ZonePermission]) -> String {
         permissions.map { "\($0.name)|\($0.canView)|\($0.canModify)|\($0.canDelete)" }.joined(separator: "|")
     }
+}
+
+// MARK: - UI Schema (for Dynamic App Config)
+
+enum UISchemaFieldType: String, Decodable {
+    case `switch` = "switch"
+    case number = "number"
+    case text = "text"
+    case textarea = "textarea"
+    case select = "select"
+    case list = "list"
+    case urlList = "urlList"
+    case keyValue = "keyValue"
+    case objectArray = "objectArray"
+    case table = "table"
+    case tabs = "tabs"
+    case clientSelector = "clientSelector"
+    case group = "group"
+}
+
+struct UISchemaFieldCondition: Decodable {
+    let field: String
+    let `operator`: String  // eq, neq, contains, notEmpty, empty
+    let value: AnyCodable?
+}
+
+struct UISchemaOption: Decodable {
+    let label: String
+    let value: String
+    let description: String?
+}
+
+struct UISchemaField: Decodable, Identifiable {
+    let id: String
+    let path: String
+    let type: UISchemaFieldType
+    let label: String
+    let description: String?
+    let `default`: AnyCodable?
+
+    // Number field options
+    let min: Int?
+    let max: Int?
+    let suffix: String?
+    let step: Int?
+
+    // Text/textarea options
+    let placeholder: String?
+    let maxLength: Int?
+    let rows: Int?
+
+    // Select options
+    let options: [UISchemaOption]?
+    let allowCustom: Bool?
+
+    // List options
+    let itemType: String?
+    let itemPlaceholder: String?
+
+    // URL list options
+    let urlListOptions: UISchemaURLListOptions?
+
+    // KeyValue options
+    let keyLabel: String?
+    let keyPlaceholder: String?
+    let valueSchema: UISchemaValueSchema?
+
+    // ObjectArray options
+    let itemSchema: UISchemaItemSchema?
+    let addLabel: String?
+    let emptyMessage: String?
+    let minItems: Int?
+    let maxItems: Int?
+
+    // Tabs options
+    let tabsOptions: UISchemaTabsOptions?
+
+    // ClientSelector options
+    let clientSelectorOptions: UISchemaClientSelectorOptions?
+
+    // Dynamic options from config
+    let optionsFrom: String?
+
+    // Group options
+    let groupFields: [UISchemaField]?
+    let groupLayout: String?
+    let groupColumns: Int?
+
+    // Conditional visibility
+    let showIf: UISchemaFieldCondition?
+    let hideIf: UISchemaFieldCondition?
+
+    // Validation
+    let required: Bool?
+    let pattern: String?
+    let patternMessage: String?
+}
+
+struct UISchemaURLListOptions: Decodable {
+    let allowOverrides: Bool?
+    let overrideFields: [UISchemaField]?
+}
+
+struct UISchemaValueSchema: Decodable {
+    let fields: [UISchemaField]
+}
+
+struct UISchemaItemSchema: Decodable {
+    let fields: [UISchemaField]
+    let titleField: String?
+    let subtitleField: String?
+}
+
+struct UISchemaTabsOptions: Decodable {
+    let itemSchema: UISchemaValueSchema
+    let nameField: String
+    let defaultItem: [String: AnyCodable]?
+    let allowAdd: Bool?
+    let allowDelete: Bool?
+    let allowRename: Bool?
+    let allowCopy: Bool?
+    let minTabs: Int?
+    let maxTabs: Int?
+}
+
+struct UISchemaClientSelectorOptions: Decodable {
+    let multiple: Bool?
+    let showHostnames: Bool?
+    let allowManualEntry: Bool?
+    let showDevicePicker: Bool?
+}
+
+struct UISchemaSection: Decodable, Identifiable {
+    let id: String
+    let title: String
+    let description: String?
+    let icon: String?
+    let fields: [UISchemaField]
+    let collapsed: Bool?
+    let collapsible: Bool?
+    let showIf: UISchemaFieldCondition?
+}
+
+struct UISchemaAction: Decodable, Identifiable {
+    let id: String
+    let label: String
+    let description: String?
+    let method: String
+    let endpoint: String
+    let variant: String?
+    let icon: String?
+    let confirmMessage: String?
+}
+
+struct UISchemaOptions: Decodable {
+    let showJsonToggle: Bool?
+    let autoSave: Bool?
+    let validateOnChange: Bool?
+}
+
+struct UISchema: Decodable {
+    let version: String
+    let appName: String
+    let description: String?
+    let sections: [UISchemaSection]?
+    let actions: [UISchemaAction]?
+    let component: String?
+    let options: UISchemaOptions?
 }

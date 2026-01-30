@@ -45,7 +45,12 @@ final class TechnitiumClient: ObservableObject {
             throw APIError.invalidURL
         }
 
-        var urlComponents = URLComponents(url: serverURL.appendingPathComponent("/api\(endpoint.path)"), resolvingAgainstBaseURL: false)
+        // Build URL properly - avoid appendingPathComponent which can mangle paths with slashes
+        let baseURLString = serverURL.absoluteString.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        guard let fullURL = URL(string: "\(baseURLString)/api\(endpoint.path)") else {
+            throw APIError.invalidURL
+        }
+        var urlComponents = URLComponents(url: fullURL, resolvingAgainstBaseURL: false)
 
         var queryItems: [URLQueryItem] = []
 
@@ -88,7 +93,12 @@ final class TechnitiumClient: ObservableObject {
             throw APIError.invalidURL
         }
 
-        var urlComponents = URLComponents(url: serverURL.appendingPathComponent("/api\(endpoint.path)"), resolvingAgainstBaseURL: false)
+        // Build URL properly - avoid appendingPathComponent which can mangle paths with slashes
+        let baseURLString = serverURL.absoluteString.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        guard let fullURL = URL(string: "\(baseURLString)/api\(endpoint.path)") else {
+            throw APIError.invalidURL
+        }
+        var urlComponents = URLComponents(url: fullURL, resolvingAgainstBaseURL: false)
 
         // Add token to URL
         var queryItems: [URLQueryItem] = []
@@ -134,7 +144,12 @@ final class TechnitiumClient: ObservableObject {
             throw APIError.invalidURL
         }
 
-        var urlComponents = URLComponents(url: serverURL.appendingPathComponent("/api\(endpoint.path)"), resolvingAgainstBaseURL: false)
+        // Build URL properly - avoid appendingPathComponent which can mangle paths with slashes
+        let baseURLString = serverURL.absoluteString.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        guard let fullURL = URL(string: "\(baseURLString)/api\(endpoint.path)") else {
+            throw APIError.invalidURL
+        }
+        var urlComponents = URLComponents(url: fullURL, resolvingAgainstBaseURL: false)
 
         // Add token to URL
         var queryItems: [URLQueryItem] = []
@@ -201,7 +216,12 @@ final class TechnitiumClient: ObservableObject {
             throw APIError.invalidURL
         }
 
-        var urlComponents = URLComponents(url: serverURL.appendingPathComponent("/api\(endpoint.path)"), resolvingAgainstBaseURL: false)
+        // Build URL properly - avoid appendingPathComponent which can mangle paths with slashes
+        let baseURLString = serverURL.absoluteString.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        guard let fullURL = URL(string: "\(baseURLString)/api\(endpoint.path)") else {
+            throw APIError.invalidURL
+        }
+        var urlComponents = URLComponents(url: fullURL, resolvingAgainstBaseURL: false)
 
         var queryItems: [URLQueryItem] = []
         if let token {

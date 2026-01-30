@@ -11,6 +11,7 @@ struct TechniluxApp: Decodable {
     let version: String
     let downloadUrl: String
     let size: String
+    let schemaUrl: String?  // URL to UI schema JSON for dynamic config
 }
 
 @MainActor
@@ -92,7 +93,8 @@ final class AppsViewModel {
                 version: app.version,
                 url: app.downloadUrl,
                 size: app.size,
-                lastModified: nil
+                lastModified: nil,
+                schemaUrl: app.schemaUrl
             )
         }
     }
@@ -356,10 +358,19 @@ struct AppDetailView: View {
     let app: DnsApp
     @Bindable var viewModel: AppsViewModel
 
-    @State private var config: String = ""
+    @State private var configText: String = ""
+    @State private var configDict: [String: Any] = [:]
+    @State private var schema: UISchema?
     @State private var isLoadingConfig = false
+    @State private var isLoadingSchema = false
     @State private var isSaving = false
     @State private var error: String?
+    @State private var showJsonEditor = false
+
+    // Check if we have a schema URL for this app
+    private var schemaUrl: String? {
+        viewModel.storeApps.first { $0.name == app.name }?.schemaUrl
+    }
 
     var body: some View {
         List {
@@ -392,13 +403,69 @@ struct AppDetailView: View {
                 }
             }
 
-            Section("Configuration") {
-                if isLoadingConfig {
-                    ProgressView()
-                } else {
-                    TextEditor(text: $config)
+            // Configuration section
+            if isLoadingConfig || isLoadingSchema {
+                Section("Configuration") {
+                    ProgressView("Loading configuration...")
+                }
+            } else if let schema = schema, !showJsonEditor {
+                // Dynamic UI based on schema
+                Section {
+                    DynamicAppConfigView(
+                        schema: schema,
+                        config: $configDict,
+                        onConfigChange: {
+                            // Convert config dict to JSON string
+                            if let data = try? JSONSerialization.data(withJSONObject: configDict, options: [.prettyPrinted, .sortedKeys]),
+                               let jsonString = String(data: data, encoding: .utf8) {
+                                configText = jsonString
+                            }
+                        }
+                    )
+                } header: {
+                    HStack {
+                        Text("Configuration")
+                        Spacer()
+                        Button {
+                            showJsonEditor = true
+                        } label: {
+                            Label("Edit JSON", systemImage: "chevron.left.forwardslash.chevron.right")
+                                .font(.caption)
+                        }
+                    }
+                }
+            } else {
+                // Fallback to JSON editor
+                Section {
+                    TextEditor(text: $configText)
                         .font(.system(.caption, design: .monospaced))
                         .frame(minHeight: 200)
+                } header: {
+                    HStack {
+                        Text("Configuration (JSON)")
+                        Spacer()
+                        if schema != nil {
+                            Button {
+                                // Update configDict from text before switching
+                                if let data = configText.data(using: .utf8),
+                                   let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                                    configDict = dict
+                                }
+                                showJsonEditor = false
+                            } label: {
+                                Label("Visual Editor", systemImage: "slider.horizontal.3")
+                                    .font(.caption)
+                            }
+                        }
+                    }
+                }
+            }
+
+            if let error = error {
+                Section {
+                    Text(error)
+                        .font(.caption)
+                        .foregroundStyle(.red)
                 }
             }
 
@@ -416,6 +483,7 @@ struct AppDetailView: View {
         .navigationTitle(app.name)
         .task {
             await loadConfig()
+            await loadSchema()
         }
     }
 
@@ -428,20 +496,53 @@ struct AppDetailView: View {
                 name: app.name,
                 node: ClusterService.shared.nodeParam
             )
-            config = response.config
+            configText = response.config
+
+            // Parse JSON to dictionary for dynamic UI
+            if let data = response.config.data(using: .utf8),
+               let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                configDict = dict
+            }
         } catch {
             self.error = error.localizedDescription
         }
     }
 
+    private func loadSchema() async {
+        guard let schemaUrl = schemaUrl, let url = URL(string: schemaUrl) else {
+            return
+        }
+
+        isLoadingSchema = true
+        defer { isLoadingSchema = false }
+
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            schema = try JSONDecoder().decode(UISchema.self, from: data)
+        } catch {
+            // Schema failed to load - fall back to JSON editor
+            print("Failed to load schema: \(error)")
+        }
+    }
+
     private func saveConfig() async {
         isSaving = true
+        error = nil
         defer { isSaving = false }
+
+        // If using dynamic UI, convert config dict to JSON
+        var configToSave = configText
+        if schema != nil && !showJsonEditor {
+            if let data = try? JSONSerialization.data(withJSONObject: configDict, options: []),
+               let jsonString = String(data: data, encoding: .utf8) {
+                configToSave = jsonString
+            }
+        }
 
         do {
             try await TechnitiumClient.shared.setAppConfig(
                 name: app.name,
-                config: config,
+                config: configToSave,
                 node: ClusterService.shared.nodeParam
             )
         } catch {

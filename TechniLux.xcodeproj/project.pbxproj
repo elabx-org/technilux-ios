@@ -34,6 +34,7 @@
 		8A1B2C3D4E5F6014 /* CacheView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7014; };
 		8A1B2C3D4E5F6015 /* DHCPView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7015; };
 		8A1B2C3D4E5F6016 /* AppsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7016; };
+		8A1B2C3D4E5F6116 /* DynamicAppConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7116; };
 		8A1B2C3D4E5F6017 /* LogsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7017; };
 		8A1B2C3D4E5F6018 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7018; };
 		8A1B2C3D4E5F6019 /* AdminView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7019; };
@@ -80,6 +81,7 @@
 		8A1B2C3D4E5F7014 /* CacheView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheView.swift; sourceTree = "<group>"; };
 		8A1B2C3D4E5F7015 /* DHCPView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DHCPView.swift; sourceTree = "<group>"; };
 		8A1B2C3D4E5F7016 /* AppsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppsView.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F7116 /* DynamicAppConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicAppConfigView.swift; sourceTree = "<group>"; };
 		8A1B2C3D4E5F7017 /* LogsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsView.swift; sourceTree = "<group>"; };
 		8A1B2C3D4E5F7018 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		8A1B2C3D4E5F7019 /* AdminView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminView.swift; sourceTree = "<group>"; };
@@ -314,6 +316,7 @@
 			isa = PBXGroup;
 			children = (
 				8A1B2C3D4E5F7016 /* AppsView.swift */,
+				8A1B2C3D4E5F7116 /* DynamicAppConfigView.swift */,
 			);
 			path = Apps;
 			sourceTree = "<group>";
@@ -564,6 +567,7 @@
 				8A1B2C3D4E5F6014 /* CacheView.swift in Sources */,
 				8A1B2C3D4E5F6015 /* DHCPView.swift in Sources */,
 				8A1B2C3D4E5F6016 /* AppsView.swift in Sources */,
+				8A1B2C3D4E5F6116 /* DynamicAppConfigView.swift in Sources */,
 				8A1B2C3D4E5F6017 /* LogsView.swift in Sources */,
 				8A1B2C3D4E5F6018 /* SettingsView.swift in Sources */,
 				8A1B2C3D4E5F6019 /* AdminView.swift in Sources */,
@@ -731,7 +735,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 2.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.technilux.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -768,7 +772,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 2.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.technilux.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -799,7 +803,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 2.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.technilux.ios.widgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -830,7 +834,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 2.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.technilux.ios.widgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
