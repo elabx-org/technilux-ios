@@ -200,7 +200,7 @@ struct CacheView: View {
             .font(.subheadline)
         }
         .padding()
-        .background(.ultraThinMaterial)
+        .background(.glass)
     }
 }
 
