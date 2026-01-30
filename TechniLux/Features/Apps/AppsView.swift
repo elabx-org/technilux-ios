@@ -1,17 +1,36 @@
 import SwiftUI
 
+// TechniLux App Store models
+struct TechniluxAppStore: Decodable {
+    let apps: [TechniluxApp]
+}
+
+struct TechniluxApp: Decodable {
+    let name: String
+    let description: String
+    let version: String
+    let downloadUrl: String
+    let size: String
+}
+
 @MainActor
 @Observable
 final class AppsViewModel {
     var installedApps: [DnsApp] = []
     var storeApps: [AppStoreEntry] = []
     var isLoading = false
+    var isLoadingStore = false
+    var storeLoaded = false
     var error: String?
+    var storeError: String?
 
     var selectedTab = 0
 
     private let client = TechnitiumClient.shared
     private let cluster = ClusterService.shared
+
+    // TechniLux app store URL
+    private let techniluxAppStoreURL = "https://raw.githubusercontent.com/elabx-org/technilux-apps/main/appstore.json"
 
     func loadApps() async {
         isLoading = true
@@ -19,14 +38,62 @@ final class AppsViewModel {
         defer { isLoading = false }
 
         do {
-            async let installed = client.listApps(node: cluster.nodeParam)
-            async let store = client.listStoreApps()
-
-            let (installedResponse, storeResponse) = try await (installed, store)
-            installedApps = installedResponse.apps
-            storeApps = storeResponse.storeApps
+            let response = try await client.listApps(node: cluster.nodeParam)
+            installedApps = response.apps
         } catch {
             self.error = error.localizedDescription
+        }
+    }
+
+    func loadStoreApps() async {
+        guard !storeLoaded else { return }
+
+        isLoadingStore = true
+        storeError = nil
+        defer { isLoadingStore = false }
+
+        var allApps: [AppStoreEntry] = []
+
+        // Load official Technitium apps
+        do {
+            let response = try await client.listStoreApps()
+            allApps.append(contentsOf: response.storeApps)
+        } catch {
+            print("Failed to load official store apps: \(error)")
+        }
+
+        // Load TechniLux apps from GitHub
+        do {
+            let techniluxApps = try await loadTechniluxApps()
+            allApps.append(contentsOf: techniluxApps)
+        } catch {
+            print("Failed to load TechniLux apps: \(error)")
+        }
+
+        if allApps.isEmpty {
+            storeError = "Failed to load app store"
+        } else {
+            storeApps = allApps
+        }
+
+        storeLoaded = true
+    }
+
+    private func loadTechniluxApps() async throws -> [AppStoreEntry] {
+        guard let url = URL(string: techniluxAppStoreURL) else { return [] }
+
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let response = try JSONDecoder().decode(TechniluxAppStore.self, from: data)
+
+        return response.apps.map { app in
+            AppStoreEntry(
+                name: app.name,
+                description: app.description,
+                version: app.version,
+                url: app.downloadUrl,
+                size: app.size,
+                lastModified: nil
+            )
         }
     }
 
@@ -100,6 +167,8 @@ struct AppsView: View {
                 await viewModel.loadApps()
             }
             .onChange(of: cluster.selectedNode) { _, _ in
+                viewModel.storeLoaded = false
+                viewModel.storeApps = []
                 Task { await viewModel.loadApps() }
             }
         }
@@ -147,9 +216,32 @@ struct AppsView: View {
 
     private var storeList: some View {
         Group {
-            if viewModel.storeApps.isEmpty {
+            if viewModel.isLoadingStore && viewModel.storeApps.isEmpty {
                 ProgressView("Loading store...")
                     .frame(maxHeight: .infinity)
+            } else if let error = viewModel.storeError, viewModel.storeApps.isEmpty {
+                VStack(spacing: 12) {
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.system(size: 40))
+                        .foregroundStyle(.secondary)
+                    Text("Failed to Load Store")
+                        .font(.headline)
+                    Text(error)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    Button("Retry") {
+                        viewModel.storeLoaded = false
+                        Task { await viewModel.loadStoreApps() }
+                    }
+                    .buttonStyle(.glassPrimary)
+                }
+                .frame(maxHeight: .infinity)
+            } else if viewModel.storeApps.isEmpty && viewModel.storeLoaded {
+                EmptyStateView(
+                    icon: "square.stack.3d.up",
+                    title: "No Apps Available",
+                    description: "App store is empty"
+                )
             } else {
                 List(viewModel.storeApps) { app in
                     StoreAppRow(
@@ -162,6 +254,9 @@ struct AppsView: View {
                 }
                 .listStyle(.plain)
             }
+        }
+        .task {
+            await viewModel.loadStoreApps()
         }
     }
 }

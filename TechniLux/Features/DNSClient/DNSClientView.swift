@@ -94,7 +94,7 @@ struct DNSClientView: View {
                     }
 
                     // Results
-                    if let result = viewModel.result?.result {
+                    if let result = viewModel.result {
                         resultsView(result)
                     }
                 }
@@ -184,8 +184,25 @@ struct DNSClientView: View {
     }
 
     @ViewBuilder
-    private func resultsView(_ result: DnsResolveResult) -> some View {
+    private func resultsView(_ result: DnsResolveResponse) -> some View {
         VStack(spacing: 16) {
+            // Metadata section
+            if let metadata = result.Metadata {
+                GlassCard {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Query Info")
+                            .font(.headline)
+
+                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
+                            InfoRow(label: "Name Server", value: metadata.nameServer)
+                            InfoRow(label: "Protocol", value: metadata.queryProtocol)
+                            InfoRow(label: "Response Size", value: "\(metadata.datagramSize) bytes")
+                            InfoRow(label: "Round Trip", value: metadata.roundTripTime)
+                        }
+                    }
+                }
+            }
+
             // Response header
             GlassCard {
                 VStack(alignment: .leading, spacing: 8) {
@@ -198,35 +215,35 @@ struct DNSClientView: View {
                         if let rcode = result.rcode {
                             StatusBadge(
                                 text: rcode,
-                                color: rcode == "NOERROR" ? .green : .red
+                                color: rcode == "NoError" ? .green : .red
                             )
                         }
                     }
 
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
-                        if let auth = result.authoritative {
-                            InfoRow(label: "Authoritative", value: auth ? "Yes" : "No")
+                    HStack(spacing: 8) {
+                        if result.authoritative {
+                            StatusBadge(text: "Authoritative", color: .blue)
                         }
-                        if let recursive = result.recursionAvailable {
-                            InfoRow(label: "Recursive", value: recursive ? "Yes" : "No")
+                        if result.recursionAvailable {
+                            StatusBadge(text: "Recursive", color: .blue)
                         }
-                        if let authentic = result.authenticData {
-                            InfoRow(label: "Authentic", value: authentic ? "Yes" : "No")
+                        if result.authenticData {
+                            StatusBadge(text: "Authenticated", color: .green)
                         }
                     }
                 }
             }
 
             // Answer section
-            if let answers = result.answer, !answers.isEmpty {
+            if !result.answer.isEmpty {
                 GlassCard {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Answer (\(answers.count))")
+                        Text("Answer (\(result.answer.count))")
                             .font(.headline)
 
-                        ForEach(Array(answers.enumerated()), id: \.offset) { _, answer in
+                        ForEach(Array(result.answer.enumerated()), id: \.offset) { index, answer in
                             AnswerRow(answer: answer)
-                            if answer != answers.last {
+                            if index < result.answer.count - 1 {
                                 Divider()
                             }
                         }
@@ -235,19 +252,37 @@ struct DNSClientView: View {
             }
 
             // Authority section
-            if let authority = result.authority, !authority.isEmpty {
+            if !result.authority.isEmpty {
                 GlassCard {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Authority (\(authority.count))")
+                        Text("Authority (\(result.authority.count))")
                             .font(.headline)
 
-                        ForEach(Array(authority.enumerated()), id: \.offset) { _, auth in
+                        ForEach(Array(result.authority.enumerated()), id: \.offset) { index, auth in
                             AnswerRow(answer: auth)
-                            if auth != authority.last {
+                            if index < result.authority.count - 1 {
                                 Divider()
                             }
                         }
                     }
+                }
+            }
+
+            // No results message
+            if result.answer.isEmpty && result.authority.isEmpty {
+                GlassCard {
+                    VStack(spacing: 8) {
+                        Image(systemName: "exclamationmark.triangle")
+                            .font(.title)
+                            .foregroundStyle(.orange)
+                        Text("No Records Found")
+                            .font(.headline)
+                        Text("The query returned no answer or authority records")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
                 }
             }
         }
@@ -275,21 +310,44 @@ struct AnswerRow: View {
                     .foregroundStyle(.secondary)
             }
 
-            Text("TTL: \(answer.ttl)")
-                .font(.caption2)
-                .foregroundStyle(.tertiary)
+            HStack {
+                Text("TTL: \(answer.ttl)")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+
+                if let status = answer.dnssecStatus {
+                    Text("• DNSSEC: \(status)")
+                        .font(.caption2)
+                        .foregroundStyle(status == "Secure" ? .green : .tertiary)
+                }
+            }
         }
         .padding(.vertical, 4)
     }
 
     private func formatRData(_ rData: [String: AnyCodable]) -> String {
-        rData.map { "\($0.key): \($0.value)" }.joined(separator: ", ")
-    }
-}
+        // Format common rData fields nicely
+        if let ipAddress = rData["IPAddress"] {
+            return "\(ipAddress)"
+        }
+        if let ptrName = rData["PTRDomainName"] {
+            return "\(ptrName)"
+        }
+        if let cname = rData["CNAMEDomainName"] {
+            return "\(cname)"
+        }
+        if let exchange = rData["Exchange"], let preference = rData["Preference"] {
+            return "\(preference) \(exchange)"
+        }
+        if let nsDomain = rData["NSDomainName"] {
+            return "\(nsDomain)"
+        }
+        if let text = rData["Text"] {
+            return "\"\(text)\""
+        }
 
-extension DnsAnswer: Equatable {
-    static func == (lhs: DnsAnswer, rhs: DnsAnswer) -> Bool {
-        lhs.name == rhs.name && lhs.type == rhs.type && lhs.ttl == rhs.ttl
+        // Fallback: show all key-value pairs
+        return rData.map { "\($0.key): \($0.value)" }.joined(separator: ", ")
     }
 }
 

@@ -874,6 +874,7 @@ final class TechnitiumClient: ObservableObject {
         if let eDnsClientSubnet { params["eDnsClientSubnet"] = eDnsClientSubnet }
         if importRecords { params["import"] = true }
 
+        // The DNS response is directly in the response field, not nested in a result
         let response: ApiResponse<DnsResolveResponse> = try await request(.dnsClientResolve, params: params, node: node)
         guard let result = response.response else {
             throw APIError.invalidResponse

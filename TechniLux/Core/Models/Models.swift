@@ -598,42 +598,71 @@ struct ClusterStateResponse: Decodable {
 // MARK: - DNS Client
 
 struct DnsResolveResponse: Decodable {
-    let result: DnsResolveResult?
+    // Direct properties from the response (PascalCase in API)
+    let Metadata: DnsMetadata?
+    let Identifier: Int?
+    let IsResponse: Bool?
+    let OPCODE: String?
+    let AuthoritativeAnswer: Bool?
+    let Truncation: Bool?
+    let RecursionDesired: Bool?
+    let RecursionAvailable: Bool?
+    let AuthenticData: Bool?
+    let CheckingDisabled: Bool?
+    let RCODE: String?
+    let QDCOUNT: Int?
+    let ANCOUNT: Int?
+    let NSCOUNT: Int?
+    let ARCOUNT: Int?
+    let Question: [DnsQuestion]?
+    let Answer: [DnsAnswer]?
+    let Authority: [DnsAnswer]?
+    let Additional: [DnsAnswer]?
+
+    // Convenience accessors with cleaner names
+    var rcode: String? { RCODE }
+    var authoritative: Bool { AuthoritativeAnswer ?? false }
+    var recursionAvailable: Bool { RecursionAvailable ?? false }
+    var authenticData: Bool { AuthenticData ?? false }
+    var answer: [DnsAnswer] { Answer ?? [] }
+    var authority: [DnsAnswer] { Authority ?? [] }
+    var additional: [DnsAnswer] { Additional ?? [] }
 }
 
-struct DnsResolveResult: Decodable {
-    let identifier: Int?
-    let isResponse: Bool?
-    let opcode: String?
-    let authoritative: Bool?
-    let truncation: Bool?
-    let recursionDesired: Bool?
-    let recursionAvailable: Bool?
-    let authenticData: Bool?
-    let checkingDisabled: Bool?
-    let rcode: String?
-    let qdcount: Int?
-    let ancount: Int?
-    let nscount: Int?
-    let arcount: Int?
-    let question: [DnsQuestion]?
-    let answer: [DnsAnswer]?
-    let authority: [DnsAnswer]?
-    let additional: [DnsAnswer]?
+struct DnsMetadata: Decodable {
+    let NameServer: String?
+    let Protocol: String?
+    let DatagramSize: Int?
+    let RoundTripTime: String?
+
+    var nameServer: String { NameServer ?? "Unknown" }
+    var queryProtocol: String { Protocol ?? "Unknown" }
+    var datagramSize: Int { DatagramSize ?? 0 }
+    var roundTripTime: String { RoundTripTime ?? "N/A" }
 }
 
 struct DnsQuestion: Decodable {
-    let name: String
-    let type: String
-    let `class`: String
+    let Name: String
+    let Type: String
+    let Class: String
+
+    var name: String { Name }
+    var type: String { Type }
 }
 
 struct DnsAnswer: Decodable {
-    let name: String
-    let type: String
-    let `class`: String
-    let ttl: Int
-    let rData: [String: AnyCodable]?
+    let Name: String
+    let Type: String
+    let Class: String
+    let TTL: Int
+    let RData: [String: AnyCodable]?
+    let DnssecStatus: String?
+
+    var name: String { Name }
+    var type: String { Type }
+    var ttl: Int { TTL }
+    var rData: [String: AnyCodable]? { RData }
+    var dnssecStatus: String? { DnssecStatus }
 }
 
 // MARK: - Profile

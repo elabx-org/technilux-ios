@@ -1,5 +1,13 @@
 import SwiftUI
 
+/// Represents a query logger app found in installed apps
+struct QueryLoggerApp: Identifiable {
+    var id: String { classPath }
+    let name: String
+    let classPath: String
+    let description: String
+}
+
 @MainActor
 @Observable
 final class LogsViewModel {
@@ -12,6 +20,11 @@ final class LogsViewModel {
     var totalPages = 1
     var entriesPerPage = 50
 
+    // Query logger apps
+    var queryLoggerApps: [QueryLoggerApp] = []
+    var selectedApp: QueryLoggerApp?
+    var appsLoaded = false
+
     // Filters
     var filterClientIP = ""
     var filterDomain = ""
@@ -20,7 +33,43 @@ final class LogsViewModel {
     private let client = TechnitiumClient.shared
     private let cluster = ClusterService.shared
 
+    /// Load installed apps and find query logger apps
+    func loadApps() async {
+        do {
+            let response = try await client.listApps(node: cluster.nodeParam)
+            var loggers: [QueryLoggerApp] = []
+
+            for app in response.apps {
+                if let processors = app.dnsApps {
+                    for processor in processors {
+                        if processor.isQueryLogger == true {
+                            loggers.append(QueryLoggerApp(
+                                name: app.name,
+                                classPath: processor.classPath,
+                                description: processor.description
+                            ))
+                        }
+                    }
+                }
+            }
+
+            queryLoggerApps = loggers
+            appsLoaded = true
+
+            // Auto-select first app if available
+            if selectedApp == nil, let first = loggers.first {
+                selectedApp = first
+                await loadLogs()
+            }
+        } catch {
+            self.error = error.localizedDescription
+            appsLoaded = true
+        }
+    }
+
     func loadLogs() async {
+        guard let app = selectedApp else { return }
+
         isLoading = true
         error = nil
         defer { isLoading = false }
@@ -32,8 +81,8 @@ final class LogsViewModel {
             if !filterResponseType.isEmpty { filters["responseType"] = filterResponseType }
 
             let response = try await client.queryLogs(
-                appName: "Query Logs",
-                classPath: "QueryLogs.App",
+                appName: app.name,
+                classPath: app.classPath,
                 pageNumber: currentPage,
                 entriesPerPage: entriesPerPage,
                 filters: filters,
@@ -107,23 +156,40 @@ struct LogsView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Pagination controls
-                if !viewModel.entries.isEmpty {
-                    paginationBar
-                }
-
-                // Logs list
-                if viewModel.isLoading && viewModel.entries.isEmpty {
-                    ProgressView("Loading logs...")
+                // Loading apps
+                if !viewModel.appsLoaded {
+                    ProgressView("Loading...")
                         .frame(maxHeight: .infinity)
-                } else if viewModel.entries.isEmpty {
-                    EmptyStateView(
-                        icon: "doc.text",
-                        title: "No Logs",
-                        description: "Query logs will appear here when enabled"
-                    )
-                } else {
-                    logsList
+                }
+                // No query logger apps installed
+                else if viewModel.queryLoggerApps.isEmpty {
+                    noQueryLoggerView
+                }
+                // Query logs view
+                else {
+                    // App picker if multiple apps
+                    if viewModel.queryLoggerApps.count > 1 {
+                        appPicker
+                    }
+
+                    // Pagination controls
+                    if !viewModel.entries.isEmpty {
+                        paginationBar
+                    }
+
+                    // Logs list
+                    if viewModel.isLoading && viewModel.entries.isEmpty {
+                        ProgressView("Loading logs...")
+                            .frame(maxHeight: .infinity)
+                    } else if viewModel.entries.isEmpty {
+                        EmptyStateView(
+                            icon: "doc.text",
+                            title: "No Logs",
+                            description: "Query logs will appear here when enabled"
+                        )
+                    } else {
+                        logsList
+                    }
                 }
             }
             .navigationTitle("Logs")
@@ -162,10 +228,14 @@ struct LogsView: View {
                 await viewModel.loadLogs()
             }
             .task {
-                await viewModel.loadLogs()
+                await viewModel.loadApps()
             }
             .onChange(of: cluster.selectedNode) { _, _ in
-                Task { await viewModel.loadLogs() }
+                viewModel.selectedApp = nil
+                viewModel.queryLoggerApps = []
+                viewModel.entries = []
+                viewModel.appsLoaded = false
+                Task { await viewModel.loadApps() }
             }
             .sheet(isPresented: $showFilters) {
                 LogFiltersSheet(viewModel: viewModel)
@@ -185,6 +255,60 @@ struct LogsView: View {
                 Text("This will permanently delete all log files. This action cannot be undone.")
             }
         }
+    }
+
+    private var noQueryLoggerView: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "info.circle")
+                .font(.system(size: 48))
+                .foregroundStyle(.blue)
+
+            Text("Query Logs App Required")
+                .font(.headline)
+
+            Text("To view detailed query logs, install a Query Logs app from the Apps page.\n\nAvailable options include:\n• Query Logs (Sqlite)\n• Query Logs (MySQL)\n• Query Logs (SQL Server)")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+
+            NavigationLink(destination: AppsView()) {
+                Text("Go to Apps")
+                    .fontWeight(.medium)
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 12)
+            }
+            .buttonStyle(.glassPrimary)
+        }
+        .frame(maxHeight: .infinity)
+        .padding()
+    }
+
+    private var appPicker: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Log Source")
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundStyle(.secondary)
+
+            Picker("Log Source", selection: Binding(
+                get: { viewModel.selectedApp?.classPath ?? "" },
+                set: { newValue in
+                    if let app = viewModel.queryLoggerApps.first(where: { $0.classPath == newValue }) {
+                        viewModel.selectedApp = app
+                        viewModel.currentPage = 1
+                        Task { await viewModel.loadLogs() }
+                    }
+                }
+            )) {
+                ForEach(viewModel.queryLoggerApps) { app in
+                    Text(app.name).tag(app.classPath)
+                }
+            }
+            .pickerStyle(.menu)
+        }
+        .padding()
+        .background(.ultraThinMaterial)
     }
 
     private var paginationBar: some View {
