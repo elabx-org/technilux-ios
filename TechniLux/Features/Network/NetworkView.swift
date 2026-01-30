@@ -7,6 +7,7 @@ final class NetworkViewModel {
     var filteredDevices: [NetworkDevice] = []
     var isLoading = false
     var error: String?
+    var errorDetail: String?
     var searchText = ""
 
     private let client = TechnitiumClient.shared
@@ -14,6 +15,7 @@ final class NetworkViewModel {
     func loadDevices() async {
         isLoading = true
         error = nil
+        errorDetail = nil
         defer { isLoading = false }
 
         do {
@@ -21,7 +23,8 @@ final class NetworkViewModel {
             devices = response.devices
             applyFilter()
         } catch {
-            self.error = error.localizedDescription
+            self.error = "Network Helper Unavailable"
+            self.errorDetail = error.localizedDescription
         }
     }
 
@@ -47,21 +50,34 @@ struct NetworkView: View {
             Group {
                 if viewModel.isLoading && viewModel.devices.isEmpty {
                     ProgressView("Loading devices...")
-                } else if viewModel.error != nil {
+                } else if let error = viewModel.error {
                     VStack(spacing: 16) {
                         Image(systemName: "network.slash")
                             .font(.system(size: 56, weight: .light))
                             .foregroundStyle(.secondary)
 
-                        Text("Network Helper Unavailable")
+                        Text(error)
                             .font(.title3)
                             .fontWeight(.semibold)
 
-                        Text("Network device discovery requires the TechniLux web proxy. Connect to your server via the TechniLux web UI port (e.g., 5381) instead of the direct Technitium API port.")
+                        if let detail = viewModel.errorDetail {
+                            Text(detail)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal)
+                        }
+
+                        Text("Network device discovery requires the TechniLux Network Helper service to be running.")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal)
+
+                        Button("Retry") {
+                            Task { await viewModel.loadDevices() }
+                        }
+                        .buttonStyle(.glassPrimary)
                     }
                     .frame(maxHeight: .infinity)
                     .padding()
