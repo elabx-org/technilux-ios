@@ -145,7 +145,7 @@ struct UserRow: View {
 // MARK: - Groups View
 
 struct GroupsView: View {
-    @State private var groups: [Group] = []
+    @State private var groups: [UserGroup] = []
     @State private var isLoading = false
     @State private var error: String?
 
@@ -189,7 +189,7 @@ struct GroupsView: View {
 }
 
 struct GroupRow: View {
-    let group: Group
+    let group: UserGroup
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {

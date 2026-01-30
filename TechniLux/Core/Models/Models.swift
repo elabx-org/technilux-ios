@@ -509,7 +509,7 @@ struct UsersResponse: Decodable {
     let users: [User]
 }
 
-struct Group: Decodable, Identifiable {
+struct UserGroup: Decodable, Identifiable {
     let name: String
     let description: String
     let members: [String]?
@@ -518,7 +518,7 @@ struct Group: Decodable, Identifiable {
 }
 
 struct GroupsResponse: Decodable {
-    let groups: [Group]
+    let groups: [UserGroup]
 }
 
 struct GroupDetails: Decodable {
