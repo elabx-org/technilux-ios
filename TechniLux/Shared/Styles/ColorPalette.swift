@@ -55,7 +55,7 @@ enum TechniluxColors {
 
 extension LinearGradient {
     /// Primary gradient for headers and highlights
-    static let techniluxPrimary = LinearGradient(
+    static let techniluxPrimaryGradient = LinearGradient(
         colors: [
             Color(hue: 173/360, saturation: 0.58, brightness: 0.45),
             Color(hue: 173/360, saturation: 0.58, brightness: 0.35)

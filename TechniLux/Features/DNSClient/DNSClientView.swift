@@ -6,7 +6,7 @@ final class DNSClientViewModel {
     var server = "this-server"
     var domain = ""
     var recordType = "A"
-    var `protocol` = "Udp"
+    var queryProtocol = "Udp"
     var dnssec = false
 
     var result: DnsResolveResponse?
@@ -32,7 +32,7 @@ final class DNSClientViewModel {
                 server: server,
                 domain: domain,
                 type: recordType,
-                protocol: `protocol`,
+                queryProtocol: queryProtocol,
                 dnssec: dnssec,
                 node: cluster.nodeParam
             )

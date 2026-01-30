@@ -858,7 +858,7 @@ final class TechnitiumClient: ObservableObject {
         server: String,
         domain: String,
         type: String,
-        protocol: String = "Udp",
+        queryProtocol: String = "Udp",
         dnssec: Bool = false,
         eDnsClientSubnet: String? = nil,
         importRecords: Bool = false,
@@ -868,7 +868,7 @@ final class TechnitiumClient: ObservableObject {
             "server": server,
             "domain": domain,
             "type": type,
-            "protocol": `protocol`,
+            "protocol": queryProtocol,
             "dnssec": dnssec
         ]
         if let eDnsClientSubnet { params["eDnsClientSubnet"] = eDnsClientSubnet }
