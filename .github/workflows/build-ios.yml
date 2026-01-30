@@ -26,14 +26,15 @@ jobs:
         run: |
           # List available Xcode versions
           ls -d /Applications/Xcode*.app
-          # Use Xcode 16.2 for iOS 18 support
-          if [ -d "/Applications/Xcode_16.2.0.app" ]; then
-            XCODE="/Applications/Xcode_16.2.0.app"
-          elif [ -d "/Applications/Xcode_16.app" ]; then
-            XCODE="/Applications/Xcode_16.app"
+          # Use Xcode 16.4 (latest stable 16.x)
+          if [ -d "/Applications/Xcode_16.4.0.app" ]; then
+            XCODE="/Applications/Xcode_16.4.0.app"
+          elif [ -d "/Applications/Xcode_16.4.app" ]; then
+            XCODE="/Applications/Xcode_16.4.app"
+          elif [ -d "/Applications/Xcode_16.3.0.app" ]; then
+            XCODE="/Applications/Xcode_16.3.0.app"
           else
-            # Fallback to first Xcode 16.x found
-            XCODE=$(ls -d /Applications/Xcode_16*.app 2>/dev/null | head -1)
+            XCODE="/Applications/Xcode_16.2.0.app"
           fi
           echo "Using Xcode: $XCODE"
           sudo xcode-select -s "$XCODE"
