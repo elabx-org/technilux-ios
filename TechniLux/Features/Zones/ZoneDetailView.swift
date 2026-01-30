@@ -223,7 +223,12 @@ struct ZoneDetailView: View {
     @State private var showDeleteConfirm = false
     @State private var showDNSSECSheet = false
     @State private var showOptionsMenu = false
+    @State private var showPTRSheet = false
     @Bindable var cluster = ClusterService.shared
+
+    private var hasAddressRecords: Bool {
+        viewModel.records.contains { $0.type == .a || $0.type == .aaaa }
+    }
 
     init(zoneName: String) {
         self.zoneName = zoneName
@@ -279,6 +284,14 @@ struct ZoneDetailView: View {
                                 showDNSSECSheet = true
                             } label: {
                                 Label("DNSSEC", systemImage: "shield.checkered")
+                            }
+                        }
+
+                        if hasAddressRecords {
+                            Button {
+                                showPTRSheet = true
+                            } label: {
+                                Label("Manage PTR Records", systemImage: "arrow.triangle.2.circlepath")
                             }
                         }
 
@@ -366,6 +379,15 @@ struct ZoneDetailView: View {
                     }
                 )
             }
+        }
+        .sheet(isPresented: $showPTRSheet) {
+            PTRManagementSheet(
+                zoneName: zoneName,
+                records: viewModel.records,
+                onComplete: {
+                    Task { await viewModel.loadData() }
+                }
+            )
         }
     }
 

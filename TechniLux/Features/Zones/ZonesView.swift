@@ -68,6 +68,10 @@ final class ZonesViewModel {
 struct ZonesView: View {
     @State private var viewModel = ZonesViewModel()
     @State private var showCreateSheet = false
+    @State private var showCloneSheet = false
+    @State private var zoneToClone: Zone?
+    @State private var showConvertSheet = false
+    @State private var zoneToConvert: Zone?
     @Bindable var cluster = ClusterService.shared
 
     var body: some View {
@@ -155,9 +159,61 @@ struct ZonesView: View {
                     }
                     .tint(zone.disabled ? .green : .orange)
                 }
+                .contextMenu {
+                    Button {
+                        zoneToClone = zone
+                        showCloneSheet = true
+                    } label: {
+                        Label("Clone Zone", systemImage: "doc.on.doc")
+                    }
+
+                    if zone.type == .primary {
+                        Button {
+                            zoneToConvert = zone
+                            showConvertSheet = true
+                        } label: {
+                            Label("Convert Zone", systemImage: "arrow.triangle.2.circlepath")
+                        }
+                    }
+
+                    Divider()
+
+                    Button {
+                        Task {
+                            await viewModel.toggleZone(zone)
+                        }
+                    } label: {
+                        Label(
+                            zone.disabled ? "Enable" : "Disable",
+                            systemImage: zone.disabled ? "checkmark.circle" : "xmark.circle"
+                        )
+                    }
+
+                    Button(role: .destructive) {
+                        Task {
+                            await viewModel.deleteZone(zone)
+                        }
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                }
             }
         }
         .listStyle(.plain)
+        .sheet(isPresented: $showCloneSheet) {
+            if let zone = zoneToClone {
+                CloneZoneSheet(sourceZone: zone.name) {
+                    Task { await viewModel.loadZones() }
+                }
+            }
+        }
+        .sheet(isPresented: $showConvertSheet) {
+            if let zone = zoneToConvert {
+                ConvertZoneSheet(zone: zone) {
+                    Task { await viewModel.loadZones() }
+                }
+            }
+        }
     }
 }
 
@@ -265,6 +321,179 @@ struct CreateZoneSheet: View {
         } catch {
             self.error = error.localizedDescription
         }
+    }
+}
+
+// MARK: - Clone Zone Sheet
+
+struct CloneZoneSheet: View {
+    @Environment(\.dismiss) private var dismiss
+
+    let sourceZone: String
+    let onCloned: () -> Void
+
+    @State private var newZoneName = ""
+    @State private var isCloning = false
+    @State private var error: String?
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    LabeledContent("Source Zone", value: sourceZone)
+
+                    TextField("New Zone Name", text: $newZoneName)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                }
+
+                Section {
+                    Text("Creates a copy of all records from the source zone into a new zone.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                if let error {
+                    Section {
+                        Text(error)
+                            .foregroundStyle(.red)
+                    }
+                }
+            }
+            .navigationTitle("Clone Zone")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                    .disabled(isCloning)
+                }
+
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Clone") {
+                        Task { await cloneZone() }
+                    }
+                    .disabled(newZoneName.isEmpty || isCloning)
+                }
+            }
+            .disabled(isCloning)
+            .overlay {
+                if isCloning {
+                    ProgressView("Cloning zone...")
+                }
+            }
+        }
+    }
+
+    private func cloneZone() async {
+        isCloning = true
+        error = nil
+
+        do {
+            try await TechnitiumClient.shared.cloneZone(
+                zone: newZoneName,
+                sourceZone: sourceZone,
+                node: ClusterService.shared.nodeParam
+            )
+            onCloned()
+            dismiss()
+        } catch {
+            self.error = error.localizedDescription
+        }
+
+        isCloning = false
+    }
+}
+
+// MARK: - Convert Zone Sheet
+
+struct ConvertZoneSheet: View {
+    @Environment(\.dismiss) private var dismiss
+
+    let zone: Zone
+    let onConverted: () -> Void
+
+    @State private var targetType: ZoneType = .secondary
+    @State private var isConverting = false
+    @State private var error: String?
+
+    private let convertibleTypes: [ZoneType] = [.secondary, .stub, .forwarder]
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    LabeledContent("Zone", value: zone.name)
+                    LabeledContent("Current Type", value: zone.type.rawValue)
+
+                    Picker("Convert To", selection: $targetType) {
+                        ForEach(convertibleTypes, id: \.rawValue) { type in
+                            Text(type.rawValue).tag(type)
+                        }
+                    }
+                }
+
+                Section {
+                    HStack {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .foregroundStyle(.orange)
+                        Text("Converting a zone will change its type. This action may affect zone replication and DNS resolution.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                if let error {
+                    Section {
+                        Text(error)
+                            .foregroundStyle(.red)
+                    }
+                }
+            }
+            .navigationTitle("Convert Zone")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                    .disabled(isConverting)
+                }
+
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Convert") {
+                        Task { await convertZone() }
+                    }
+                    .disabled(isConverting)
+                }
+            }
+            .disabled(isConverting)
+            .overlay {
+                if isConverting {
+                    ProgressView("Converting zone...")
+                }
+            }
+        }
+    }
+
+    private func convertZone() async {
+        isConverting = true
+        error = nil
+
+        do {
+            try await TechnitiumClient.shared.convertZone(
+                zone: zone.name,
+                type: targetType,
+                node: ClusterService.shared.nodeParam
+            )
+            onConverted()
+            dismiss()
+        } catch {
+            self.error = error.localizedDescription
+        }
+
+        isConverting = false
     }
 }
 
