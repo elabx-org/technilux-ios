@@ -65,6 +65,6 @@ struct SplashView: View {
     }
 }
 
-#Preview("App") {
-    TechniLuxApp()
+#Preview("Splash") {
+    SplashView()
 }

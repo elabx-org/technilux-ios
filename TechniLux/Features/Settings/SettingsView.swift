@@ -350,8 +350,8 @@ struct ForwarderSettingsView: View {
             }
 
             Section("Options") {
-                if let protocol = settings.forwarderProtocol {
-                    InfoRow(label: "Protocol", value: `protocol`)
+                if let forwarderProtocol = settings.forwarderProtocol {
+                    InfoRow(label: "Protocol", value: forwarderProtocol)
                 }
                 InfoRow(label: "Concurrent", value: settings.concurrentForwarding ?? false ? "Yes" : "No")
             }
