@@ -1052,4 +1052,30 @@ final class TechnitiumClient: ObservableObject {
             node: node
         )
     }
+
+    // MARK: - Zone Permissions
+
+    func getZonePermissions(zone: String, node: String? = nil) async throws -> ZonePermissionsResponse {
+        let response: ApiResponse<ZonePermissionsResponse> = try await request(
+            .zonePermissionsGet,
+            params: ["zone": zone],
+            node: node
+        )
+        guard let permissions = response.response else {
+            throw APIError.invalidResponse
+        }
+        return permissions
+    }
+
+    func setZonePermissions(zone: String, userPermissions: String, groupPermissions: String, node: String? = nil) async throws {
+        let _: ApiResponse<EmptyResponse> = try await request(
+            .zonePermissionsSet,
+            params: [
+                "zone": zone,
+                "userPermissions": userPermissions,
+                "groupPermissions": groupPermissions
+            ],
+            node: node
+        )
+    }
 }

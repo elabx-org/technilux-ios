@@ -224,6 +224,7 @@ struct ZoneDetailView: View {
     @State private var showDNSSECSheet = false
     @State private var showOptionsMenu = false
     @State private var showPTRSheet = false
+    @State private var showPermissionsSheet = false
     @Bindable var cluster = ClusterService.shared
 
     private var hasAddressRecords: Bool {
@@ -294,6 +295,14 @@ struct ZoneDetailView: View {
                                 Label("Manage PTR Records", systemImage: "arrow.triangle.2.circlepath")
                             }
                         }
+
+                        Button {
+                            showPermissionsSheet = true
+                        } label: {
+                            Label("Permissions", systemImage: "lock.shield")
+                        }
+
+                        Divider()
 
                         Button {
                             Task {
@@ -385,6 +394,14 @@ struct ZoneDetailView: View {
                 zoneName: zoneName,
                 records: viewModel.records,
                 onComplete: {
+                    Task { await viewModel.loadData() }
+                }
+            )
+        }
+        .sheet(isPresented: $showPermissionsSheet) {
+            ZonePermissionsSheet(
+                zoneName: zoneName,
+                onSaved: {
                     Task { await viewModel.loadData() }
                 }
             )

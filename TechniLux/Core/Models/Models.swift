@@ -735,3 +735,41 @@ extension AnyCodable: CustomStringConvertible {
         }
     }
 }
+
+// MARK: - Zone Permissions
+
+struct ZonePermissionsResponse: Decodable {
+    let userPermissions: String?
+    let groupPermissions: String?
+}
+
+struct ZonePermission: Identifiable, Equatable {
+    var id: String { name }
+    var name: String
+    var canView: Bool
+    var canModify: Bool
+    var canDelete: Bool
+
+    static func parse(_ permString: String?) -> [ZonePermission] {
+        guard let permString, !permString.isEmpty else { return [] }
+        let parts = permString.split(separator: "|").map(String.init)
+        var permissions: [ZonePermission] = []
+
+        var i = 0
+        while i + 3 < parts.count {
+            permissions.append(ZonePermission(
+                name: parts[i],
+                canView: parts[i + 1] == "true",
+                canModify: parts[i + 2] == "true",
+                canDelete: parts[i + 3] == "true"
+            ))
+            i += 4
+        }
+
+        return permissions
+    }
+
+    static func format(_ permissions: [ZonePermission]) -> String {
+        permissions.map { "\($0.name)|\($0.canView)|\($0.canModify)|\($0.canDelete)" }.joined(separator: "|")
+    }
+}
