@@ -179,6 +179,24 @@ struct AppsView: View {
             if viewModel.isLoading && viewModel.installedApps.isEmpty {
                 ProgressView("Loading apps...")
                     .frame(maxHeight: .infinity)
+            } else if let error = viewModel.error, viewModel.installedApps.isEmpty {
+                VStack(spacing: 12) {
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.system(size: 40))
+                        .foregroundStyle(.red)
+                    Text("Failed to Load Apps")
+                        .font(.headline)
+                    Text(error)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                    Button("Retry") {
+                        Task { await viewModel.loadApps() }
+                    }
+                    .buttonStyle(.glassPrimary)
+                }
+                .frame(maxHeight: .infinity)
+                .padding()
             } else if viewModel.installedApps.isEmpty {
                 EmptyStateView(
                     icon: "square.stack.3d.up",

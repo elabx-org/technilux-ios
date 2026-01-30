@@ -18,11 +18,12 @@ struct ApiResponse<T: Decodable>: Decodable {
         errorMessage = try container.decodeIfPresent(String.self, forKey: .errorMessage)
 
         // Response might be at root level or nested in "response" key
-        if let nested = try? container.decodeIfPresent(T.self, forKey: .response) {
-            response = nested
+        // First try nested "response" key (most endpoints)
+        if container.contains(.response) {
+            response = try container.decodeIfPresent(T.self, forKey: .response)
         } else {
             // Try decoding from root level (for login/session endpoints)
-            response = try? T(from: decoder)
+            response = try T(from: decoder)
         }
     }
 }

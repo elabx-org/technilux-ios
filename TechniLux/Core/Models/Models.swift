@@ -253,8 +253,17 @@ struct DnssecProperties: Decodable {
 
 // MARK: - Blocking
 
+struct DomainEntry: Decodable {
+    let domain: String
+}
+
 struct DomainsResponse: Decodable {
-    let domains: [String]
+    let domains: [DomainEntry]
+
+    /// Get just the domain strings
+    var domainStrings: [String] {
+        domains.map { $0.domain }
+    }
 }
 
 struct BlockedCheckResponse: Decodable {

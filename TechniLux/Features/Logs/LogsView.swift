@@ -161,6 +161,28 @@ struct LogsView: View {
                     ProgressView("Loading...")
                         .frame(maxHeight: .infinity)
                 }
+                // Error loading apps
+                else if let error = viewModel.error, viewModel.queryLoggerApps.isEmpty {
+                    VStack(spacing: 12) {
+                        Image(systemName: "exclamationmark.triangle")
+                            .font(.system(size: 40))
+                            .foregroundStyle(.red)
+                        Text("Failed to Load Apps")
+                            .font(.headline)
+                        Text(error)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                        Button("Retry") {
+                            viewModel.appsLoaded = false
+                            viewModel.error = nil
+                            Task { await viewModel.loadApps() }
+                        }
+                        .buttonStyle(.glassPrimary)
+                    }
+                    .frame(maxHeight: .infinity)
+                    .padding()
+                }
                 // No query logger apps installed
                 else if viewModel.queryLoggerApps.isEmpty {
                     noQueryLoggerView

@@ -28,8 +28,8 @@ final class BlockingViewModel {
             async let blocked = client.listBlockedDomains(node: cluster.nodeParam)
 
             let (allowedResponse, blockedResponse) = try await (allowed, blocked)
-            allowedDomains = allowedResponse.domains
-            blockedDomains = blockedResponse.domains
+            allowedDomains = allowedResponse.domainStrings
+            blockedDomains = blockedResponse.domainStrings
         } catch {
             self.error = error.localizedDescription
         }
@@ -119,6 +119,32 @@ struct BlockingView: View {
                 }
                 .pickerStyle(.segmented)
                 .padding()
+
+                // Error display
+                if let error = viewModel.error {
+                    HStack {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .foregroundStyle(.red)
+                        Text(error)
+                            .font(.subheadline)
+                        Spacer()
+                        Button("Retry") {
+                            Task { await viewModel.loadDomains() }
+                        }
+                        .font(.subheadline)
+                    }
+                    .padding()
+                    .background(Color.red.opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .padding(.horizontal)
+                }
+
+                // Loading indicator
+                if viewModel.isLoading {
+                    ProgressView()
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                }
 
                 // Domain lists
                 if viewModel.selectedTab == 0 {
