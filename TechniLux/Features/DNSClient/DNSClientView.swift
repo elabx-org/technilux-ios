@@ -76,7 +76,7 @@ struct DNSClientView: View {
                         .frame(maxWidth: .infinity)
                         .padding()
                     }
-                    .buttonStyle(.glass)
+                    .buttonStyle(.glassPrimary)
                     .disabled(viewModel.domain.isEmpty || viewModel.isLoading)
 
                     // Error

@@ -141,7 +141,7 @@ struct LoginView: View {
                             .frame(maxWidth: .infinity)
                             .padding()
                         }
-                        .buttonStyle(.glass)
+                        .buttonStyle(.glassPrimary)
                         .disabled(auth.isLoading || !isFormValid)
                     }
                     .padding(.horizontal)

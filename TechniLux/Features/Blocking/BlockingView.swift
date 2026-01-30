@@ -217,7 +217,7 @@ struct BlockingView: View {
                         Text(viewModel.blockingEnabled ? "Disable" : "Enable")
                             .font(.subheadline)
                     }
-                    .buttonStyle(.glass)
+                    .buttonStyle(.glassPrimary)
                 }
             }
         }
@@ -247,7 +247,7 @@ struct BlockingView: View {
                     } label: {
                         Text("Check")
                     }
-                    .buttonStyle(.glass)
+                    .buttonStyle(.glassPrimary)
                     .disabled(checkDomain.isEmpty)
                 }
 

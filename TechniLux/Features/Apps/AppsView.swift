@@ -232,7 +232,7 @@ struct StoreAppRow: View {
                 StatusBadge(text: "Installed", color: .green)
             } else {
                 Button("Install", action: onInstall)
-                    .buttonStyle(.glass)
+                    .buttonStyle(.glassPrimary)
             }
         }
         .padding(.vertical, 4)

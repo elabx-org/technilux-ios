@@ -91,7 +91,7 @@ struct OutlinedButtonStyle: ButtonStyle {
 }
 
 extension ButtonStyle where Self == GlassButtonStyle {
-    static var glass: GlassButtonStyle { GlassButtonStyle() }
+    static var glassPrimary: GlassButtonStyle { GlassButtonStyle() }
     static var glassDestructive: GlassButtonStyle { GlassButtonStyle(isDestructive: true) }
 }
 
@@ -166,7 +166,7 @@ struct EmptyStateView: View {
 
             if let action, let actionTitle {
                 Button(actionTitle, action: action)
-                    .buttonStyle(.glass)
+                    .buttonStyle(.glassPrimary)
                     .padding(.top, 8)
             }
         }
