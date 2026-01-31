@@ -216,10 +216,6 @@ final class LogFileViewModel {
         refreshTask?.cancel()
         refreshTask = nil
     }
-
-    deinit {
-        refreshTask?.cancel()
-    }
 }
 
 struct LogsView: View {
@@ -685,7 +681,6 @@ struct LogFileViewerSheet: View {
 
     @Environment(\.dismiss) private var dismiss
     @State private var viewModel = LogFileViewModel()
-    @State private var scrollProxy: ScrollViewProxy?
 
     var body: some View {
         NavigationStack {
