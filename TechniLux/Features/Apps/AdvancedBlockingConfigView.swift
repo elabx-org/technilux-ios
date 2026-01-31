@@ -247,6 +247,37 @@ final class AdvancedBlockingViewModel {
         }
     }
 
+    // MARK: - Group Property Setters (use activeGroupIndex to avoid stale captures)
+
+    func setGroupName(_ name: String) {
+        guard activeGroupIndex < config.groups.count else { return }
+        let oldName = config.groups[activeGroupIndex].name
+        config.groups[activeGroupIndex].name = name
+
+        // Update mappings
+        if var mappings = config.networkMappings {
+            for i in mappings.indices {
+                mappings[i].groups = mappings[i].groups.map { $0 == oldName ? name : $0 }
+            }
+            config.networkMappings = mappings
+        }
+    }
+
+    func setGroupDescription(_ description: String?) {
+        guard activeGroupIndex < config.groups.count else { return }
+        config.groups[activeGroupIndex].description = description
+    }
+
+    func setGroupEnableBlocking(_ enabled: Bool) {
+        guard activeGroupIndex < config.groups.count else { return }
+        config.groups[activeGroupIndex].enableBlocking = enabled
+    }
+
+    func setGroupBlockAsNxDomain(_ value: Bool) {
+        guard activeGroupIndex < config.groups.count else { return }
+        config.groups[activeGroupIndex].blockAsNxDomain = value
+    }
+
     // Network mapping
     func openAddMapping() {
         editingMappingIndex = nil
@@ -515,17 +546,16 @@ struct AdvancedBlockingConfigView: View {
         // Separate section for group config - avoids state issues
         if viewModel.activeGroupIndex < viewModel.config.groups.count {
             Section("Group: \(viewModel.config.groups[viewModel.activeGroupIndex].name)") {
-                GroupConfigContent(viewModel: viewModel, groupIndex: viewModel.activeGroupIndex)
+                GroupConfigContent(viewModel: viewModel)
             }
         }
     }
 }
 
-// MARK: - Group Config Content (no bindings, direct mutation)
+// MARK: - Group Config Content (uses viewModel.activeGroupIndex directly)
 
 struct GroupConfigContent: View {
     @Bindable var viewModel: AdvancedBlockingViewModel
-    let groupIndex: Int
 
     @State private var newAllowed = ""
     @State private var newBlocked = ""
@@ -536,42 +566,51 @@ struct GroupConfigContent: View {
     @State private var newAdblockUrl = ""
     @State private var newBlockingAddress = ""
 
-    private var group: BlockingGroup {
-        viewModel.config.groups[groupIndex]
+    // Always use current activeGroupIndex from viewModel
+    private var idx: Int { viewModel.activeGroupIndex }
+
+    private var group: BlockingGroup? {
+        guard idx < viewModel.config.groups.count else { return nil }
+        return viewModel.config.groups[idx]
     }
 
     var body: some View {
-        // Group name
+        if let group = group {
+            groupContent(group)
+        }
+    }
+
+    @ViewBuilder
+    private func groupContent(_ group: BlockingGroup) -> some View {
+        // Group name - use viewModel method
         TextField("Group Name", text: Binding(
-            get: { group.name },
-            set: { newName in
-                viewModel.config.groups[groupIndex].name = newName
-            }
+            get: { viewModel.config.groups[viewModel.activeGroupIndex].name },
+            set: { viewModel.setGroupName($0) }
         ))
 
         // Description
         TextField("Description (optional)", text: Binding(
-            get: { group.description ?? "" },
-            set: { viewModel.config.groups[groupIndex].description = $0.isEmpty ? nil : $0 }
+            get: { viewModel.config.groups[viewModel.activeGroupIndex].description ?? "" },
+            set: { viewModel.setGroupDescription($0.isEmpty ? nil : $0) }
         ))
         .font(.subheadline)
 
-        // Enable Blocking toggle - direct mutation
+        // Enable Blocking toggle - use viewModel method to avoid stale index
         Toggle("Enable Blocking", isOn: Binding(
-            get: { group.enableBlocking },
-            set: { viewModel.config.groups[groupIndex].enableBlocking = $0 }
+            get: { viewModel.config.groups[viewModel.activeGroupIndex].enableBlocking },
+            set: { viewModel.setGroupEnableBlocking($0) }
         ))
 
         // Block as NxDomain toggle
         Toggle("Block as NxDomain", isOn: Binding(
-            get: { group.blockAsNxDomain },
-            set: { viewModel.config.groups[groupIndex].blockAsNxDomain = $0 }
+            get: { viewModel.config.groups[viewModel.activeGroupIndex].blockAsNxDomain },
+            set: { viewModel.setGroupBlockAsNxDomain($0) }
         ))
 
         // Group actions
         HStack {
             Button {
-                viewModel.duplicateGroup(at: groupIndex)
+                viewModel.duplicateGroup(at: viewModel.activeGroupIndex)
             } label: {
                 Label("Duplicate", systemImage: "doc.on.doc")
                     .font(.caption)
@@ -581,7 +620,7 @@ struct GroupConfigContent: View {
 
             if viewModel.config.groups.count > 1 {
                 Button(role: .destructive) {
-                    viewModel.deleteGroup(at: groupIndex)
+                    viewModel.deleteGroup(at: viewModel.activeGroupIndex)
                 } label: {
                     Label("Delete", systemImage: "trash")
                         .font(.caption)
@@ -593,10 +632,7 @@ struct GroupConfigContent: View {
         // Blocking Addresses
         DisclosureGroup("Blocking Addresses (\(group.blockingAddresses.count))") {
             listEditor(
-                items: Binding(
-                    get: { group.blockingAddresses },
-                    set: { viewModel.config.groups[groupIndex].blockingAddresses = $0 }
-                ),
+                keyPath: \.blockingAddresses,
                 newItem: $newBlockingAddress,
                 placeholder: "0.0.0.0 or ::",
                 suggestions: ["0.0.0.0", "::", "127.0.0.1"]
@@ -606,10 +642,7 @@ struct GroupConfigContent: View {
         // Allowed Domains
         DisclosureGroup("Allowed Domains (\(group.allowed.count))") {
             listEditor(
-                items: Binding(
-                    get: { group.allowed },
-                    set: { viewModel.config.groups[groupIndex].allowed = $0 }
-                ),
+                keyPath: \.allowed,
                 newItem: $newAllowed,
                 placeholder: "domain.com"
             )
@@ -618,10 +651,7 @@ struct GroupConfigContent: View {
         // Blocked Domains
         DisclosureGroup("Blocked Domains (\(group.blocked.count))") {
             listEditor(
-                items: Binding(
-                    get: { group.blocked },
-                    set: { viewModel.config.groups[groupIndex].blocked = $0 }
-                ),
+                keyPath: \.blocked,
                 newItem: $newBlocked,
                 placeholder: "domain.com"
             )
@@ -630,10 +660,7 @@ struct GroupConfigContent: View {
         // Allow List URLs
         DisclosureGroup("Allow List URLs (\(group.allowListUrls.count))") {
             listEditor(
-                items: Binding(
-                    get: { group.allowListUrls },
-                    set: { viewModel.config.groups[groupIndex].allowListUrls = $0 }
-                ),
+                keyPath: \.allowListUrls,
                 newItem: $newAllowUrl,
                 placeholder: "https://..."
             )
@@ -642,10 +669,7 @@ struct GroupConfigContent: View {
         // Block List URLs
         DisclosureGroup("Block List URLs (\(group.blockListUrls.count))") {
             listEditor(
-                items: Binding(
-                    get: { group.blockListUrls },
-                    set: { viewModel.config.groups[groupIndex].blockListUrls = $0 }
-                ),
+                keyPath: \.blockListUrls,
                 newItem: $newBlockUrl,
                 placeholder: "https://..."
             )
@@ -654,10 +678,7 @@ struct GroupConfigContent: View {
         // Allowed Regex
         DisclosureGroup("Allowed Regex (\(group.allowedRegex.count))") {
             listEditor(
-                items: Binding(
-                    get: { group.allowedRegex },
-                    set: { viewModel.config.groups[groupIndex].allowedRegex = $0 }
-                ),
+                keyPath: \.allowedRegex,
                 newItem: $newAllowRegex,
                 placeholder: "regex pattern"
             )
@@ -666,10 +687,7 @@ struct GroupConfigContent: View {
         // Blocked Regex
         DisclosureGroup("Blocked Regex (\(group.blockedRegex.count))") {
             listEditor(
-                items: Binding(
-                    get: { group.blockedRegex },
-                    set: { viewModel.config.groups[groupIndex].blockedRegex = $0 }
-                ),
+                keyPath: \.blockedRegex,
                 newItem: $newBlockRegex,
                 placeholder: "regex pattern"
             )
@@ -678,10 +696,7 @@ struct GroupConfigContent: View {
         // Adblock List URLs
         DisclosureGroup("Adblock List URLs (\(group.adblockListUrls.count))") {
             listEditor(
-                items: Binding(
-                    get: { group.adblockListUrls },
-                    set: { viewModel.config.groups[groupIndex].adblockListUrls = $0 }
-                ),
+                keyPath: \.adblockListUrls,
                 newItem: $newAdblockUrl,
                 placeholder: "https://..."
             )
@@ -689,7 +704,12 @@ struct GroupConfigContent: View {
     }
 
     @ViewBuilder
-    private func listEditor(items: Binding<[String]>, newItem: Binding<String>, placeholder: String, suggestions: [String]? = nil) -> some View {
+    private func listEditor(keyPath: WritableKeyPath<BlockingGroup, [String]>, newItem: Binding<String>, placeholder: String, suggestions: [String]? = nil) -> some View {
+        let items = Binding(
+            get: { viewModel.config.groups[viewModel.activeGroupIndex][keyPath: keyPath] },
+            set: { viewModel.config.groups[viewModel.activeGroupIndex][keyPath: keyPath] = $0 }
+        )
+
         HStack {
             TextField(placeholder, text: newItem)
                 .textInputAutocapitalization(.never)
