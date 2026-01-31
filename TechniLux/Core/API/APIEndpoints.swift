@@ -71,6 +71,7 @@ enum APIEndpoint {
     // Logs
     case logsQuery
     case logsList
+    case logsDownload
     case logsDelete
     case logsDeleteAll
 
@@ -228,6 +229,7 @@ enum APIEndpoint {
         // Logs
         case .logsQuery: return "/logs/query"
         case .logsList: return "/logs/list"
+        case .logsDownload: return "/logs/download"
         case .logsDelete: return "/logs/delete"
         case .logsDeleteAll: return "/logs/deleteAll"
 

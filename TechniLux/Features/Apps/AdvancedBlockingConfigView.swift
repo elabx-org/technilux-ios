@@ -513,6 +513,7 @@ struct AdvancedBlockingConfigView: View {
                     viewModel: viewModel,
                     groupIndex: viewModel.activeGroupIndex
                 )
+                .id(viewModel.activeGroupIndex) // Force recreation when switching groups
             }
         } header: {
             HStack {

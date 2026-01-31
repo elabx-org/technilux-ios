@@ -632,6 +632,49 @@ final class TechnitiumClient: ObservableObject {
         let _: ApiResponse<EmptyResponse> = try await request(.logsDeleteAll, node: node)
     }
 
+    /// Download log file content (returns plain text, not JSON)
+    func downloadLogFile(fileName: String, limit: Int = 500, node: String? = nil) async throws -> String {
+        guard let serverURL else {
+            throw APIError.invalidURL
+        }
+
+        let baseURLString = serverURL.absoluteString.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        guard let fullURL = URL(string: "\(baseURLString)/api/logs/download") else {
+            throw APIError.invalidURL
+        }
+        var urlComponents = URLComponents(url: fullURL, resolvingAgainstBaseURL: false)
+
+        var queryItems: [URLQueryItem] = []
+        if let token {
+            queryItems.append(URLQueryItem(name: "token", value: token))
+        }
+        queryItems.append(URLQueryItem(name: "fileName", value: fileName))
+        queryItems.append(URLQueryItem(name: "limit", value: String(limit)))
+        if let node {
+            queryItems.append(URLQueryItem(name: "node", value: node))
+        }
+        urlComponents?.queryItems = queryItems
+
+        guard let url = urlComponents?.url else {
+            throw APIError.invalidURL
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        let (data, response) = try await session.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse
+        }
+
+        guard (200...299).contains(httpResponse.statusCode) else {
+            throw APIError.serverError("HTTP \(httpResponse.statusCode)")
+        }
+
+        return String(data: data, encoding: .utf8) ?? ""
+    }
+
     // MARK: - DHCP
 
     func listDhcpScopes(node: String? = nil) async throws -> DhcpScopesResponse {

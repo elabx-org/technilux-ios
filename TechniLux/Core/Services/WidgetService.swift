@@ -184,6 +184,36 @@ class WidgetService {
 
         return nil
     }
+
+    /// Checks for pending blocking action from interactive widgets
+    func checkPendingBlockingAction() -> BlockingActionRequest? {
+        guard let containerURL else { return nil }
+
+        let requestURL = containerURL.appendingPathComponent("blocking_action.json")
+
+        guard let data = try? Data(contentsOf: requestURL),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let action = json["action"] as? String,
+              let timestamp = json["timestamp"] as? TimeInterval else {
+            return nil
+        }
+
+        // Remove the request file after reading
+        try? FileManager.default.removeItem(at: requestURL)
+
+        // Only process if request is recent (within last 30 seconds)
+        if Date().timeIntervalSince1970 - timestamp < 30 {
+            let minutes = json["minutes"] as? Int
+            return BlockingActionRequest(action: action, minutes: minutes)
+        }
+
+        return nil
+    }
+}
+
+struct BlockingActionRequest {
+    let action: String // "toggle", "enable", "disable"
+    let minutes: Int?  // For temporary disable
 }
 
 // MARK: - Widget Data Model (shared with widget extension)

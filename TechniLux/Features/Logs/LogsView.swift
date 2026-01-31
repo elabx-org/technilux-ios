@@ -8,6 +8,27 @@ struct QueryLoggerApp: Identifiable {
     let description: String
 }
 
+/// Auto-refresh interval options
+enum RefreshInterval: Int, CaseIterable, Identifiable {
+    case off = 0
+    case twoSeconds = 2
+    case fiveSeconds = 5
+    case tenSeconds = 10
+    case thirtySeconds = 30
+
+    var id: Int { rawValue }
+
+    var label: String {
+        switch self {
+        case .off: return "Off"
+        case .twoSeconds: return "2s"
+        case .fiveSeconds: return "5s"
+        case .tenSeconds: return "10s"
+        case .thirtySeconds: return "30s"
+        }
+    }
+}
+
 @MainActor
 @Observable
 final class LogsViewModel {
@@ -29,6 +50,9 @@ final class LogsViewModel {
     var filterClientIP = ""
     var filterDomain = ""
     var filterResponseType = ""
+
+    // Auto-refresh for query logs
+    var queryAutoRefresh: RefreshInterval = .off
 
     private let client = TechnitiumClient.shared
     private let cluster = ClusterService.shared
@@ -146,11 +170,64 @@ final class LogsViewModel {
     }
 }
 
+@MainActor
+@Observable
+final class LogFileViewModel {
+    var content: String = ""
+    var isLoading = false
+    var error: String?
+    var autoRefresh: RefreshInterval = .off
+    var followMode = true
+
+    private var refreshTask: Task<Void, Never>?
+    private let client = TechnitiumClient.shared
+    private let cluster = ClusterService.shared
+
+    func loadContent(fileName: String) async {
+        isLoading = true
+        error = nil
+        defer { isLoading = false }
+
+        do {
+            content = try await client.downloadLogFile(
+                fileName: fileName,
+                limit: 500,
+                node: cluster.nodeParam
+            )
+        } catch {
+            self.error = error.localizedDescription
+        }
+    }
+
+    func startAutoRefresh(fileName: String) {
+        stopAutoRefresh()
+        guard autoRefresh != .off else { return }
+
+        refreshTask = Task {
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(autoRefresh.rawValue))
+                if Task.isCancelled { break }
+                await loadContent(fileName: fileName)
+            }
+        }
+    }
+
+    func stopAutoRefresh() {
+        refreshTask?.cancel()
+        refreshTask = nil
+    }
+
+    deinit {
+        refreshTask?.cancel()
+    }
+}
+
 struct LogsView: View {
     @State private var viewModel = LogsViewModel()
     @State private var showFilters = false
     @State private var showFiles = false
     @State private var showDeleteAllConfirm = false
+    @State private var refreshTask: Task<Void, Never>?
     @Bindable var cluster = ClusterService.shared
 
     var body: some View {
@@ -194,10 +271,8 @@ struct LogsView: View {
                         appPicker
                     }
 
-                    // Pagination controls
-                    if !viewModel.entries.isEmpty {
-                        paginationBar
-                    }
+                    // Controls bar
+                    controlsBar
 
                     // Logs list
                     if viewModel.isLoading && viewModel.entries.isEmpty {
@@ -257,7 +332,18 @@ struct LogsView: View {
                 viewModel.queryLoggerApps = []
                 viewModel.entries = []
                 viewModel.appsLoaded = false
+                stopAutoRefresh()
                 Task { await viewModel.loadApps() }
+            }
+            .onChange(of: viewModel.queryAutoRefresh) { _, newValue in
+                if newValue == .off {
+                    stopAutoRefresh()
+                } else {
+                    startAutoRefresh()
+                }
+            }
+            .onDisappear {
+                stopAutoRefresh()
             }
             .sheet(isPresented: $showFilters) {
                 LogFiltersSheet(viewModel: viewModel)
@@ -277,6 +363,24 @@ struct LogsView: View {
                 Text("This will permanently delete all log files. This action cannot be undone.")
             }
         }
+    }
+
+    private func startAutoRefresh() {
+        stopAutoRefresh()
+        guard viewModel.queryAutoRefresh != .off else { return }
+
+        refreshTask = Task {
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(viewModel.queryAutoRefresh.rawValue))
+                if Task.isCancelled { break }
+                await viewModel.loadLogs()
+            }
+        }
+    }
+
+    private func stopAutoRefresh() {
+        refreshTask?.cancel()
+        refreshTask = nil
     }
 
     private var noQueryLoggerView: some View {
@@ -333,30 +437,56 @@ struct LogsView: View {
         .background(.ultraThinMaterial)
     }
 
-    private var paginationBar: some View {
+    private var controlsBar: some View {
         HStack {
-            Button {
-                Task { await viewModel.previousPage() }
-            } label: {
-                Image(systemName: "chevron.left")
+            // Auto-refresh picker
+            HStack(spacing: 4) {
+                Image(systemName: "arrow.clockwise")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Picker("", selection: $viewModel.queryAutoRefresh) {
+                    ForEach(RefreshInterval.allCases) { interval in
+                        Text(interval.label).tag(interval)
+                    }
+                }
+                .pickerStyle(.menu)
+                .labelsHidden()
+
+                if viewModel.queryAutoRefresh != .off {
+                    Circle()
+                        .fill(.green)
+                        .frame(width: 6, height: 6)
+                }
             }
-            .disabled(viewModel.currentPage <= 1)
 
             Spacer()
 
-            Text("Page \(viewModel.currentPage) of \(viewModel.totalPages)")
-                .font(.subheadline)
+            // Pagination
+            if !viewModel.entries.isEmpty {
+                HStack(spacing: 12) {
+                    Button {
+                        Task { await viewModel.previousPage() }
+                    } label: {
+                        Image(systemName: "chevron.left")
+                    }
+                    .disabled(viewModel.currentPage <= 1)
 
-            Spacer()
+                    Text("\(viewModel.currentPage)/\(viewModel.totalPages)")
+                        .font(.caption)
+                        .monospacedDigit()
 
-            Button {
-                Task { await viewModel.nextPage() }
-            } label: {
-                Image(systemName: "chevron.right")
+                    Button {
+                        Task { await viewModel.nextPage() }
+                    } label: {
+                        Image(systemName: "chevron.right")
+                    }
+                    .disabled(viewModel.currentPage >= viewModel.totalPages)
+                }
             }
-            .disabled(viewModel.currentPage >= viewModel.totalPages)
         }
-        .padding()
+        .padding(.horizontal)
+        .padding(.vertical, 8)
         .background(.ultraThinMaterial)
     }
 
@@ -478,6 +608,7 @@ struct LogFilesSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Bindable var viewModel: LogsViewModel
     @State private var isLoading = true
+    @State private var selectedFile: LogFile?
 
     var body: some View {
         NavigationStack {
@@ -501,16 +632,25 @@ struct LogFilesSheet: View {
                     .padding()
                 } else {
                     List(viewModel.logFiles) { file in
-                        HStack {
-                            VStack(alignment: .leading) {
-                                Text(file.fileName)
-                                    .font(.subheadline)
-                                Text(file.size)
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
+                        Button {
+                            selectedFile = file
+                        } label: {
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    Text(file.fileName)
+                                        .font(.subheadline)
+                                        .foregroundStyle(.primary)
+                                    Text(file.size)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
 
-                            Spacer()
+                                Spacer()
+
+                                Image(systemName: "chevron.right")
+                                    .font(.caption)
+                                    .foregroundStyle(.tertiary)
+                            }
                         }
                         .swipeActions {
                             Button(role: .destructive) {
@@ -533,9 +673,134 @@ struct LogFilesSheet: View {
                 await viewModel.loadLogFiles()
                 isLoading = false
             }
+            .sheet(item: $selectedFile) { file in
+                LogFileViewerSheet(fileName: file.fileName)
+            }
         }
     }
+}
 
+struct LogFileViewerSheet: View {
+    let fileName: String
+
+    @Environment(\.dismiss) private var dismiss
+    @State private var viewModel = LogFileViewModel()
+    @State private var scrollProxy: ScrollViewProxy?
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                // Controls bar
+                HStack {
+                    // Auto-refresh picker
+                    HStack(spacing: 4) {
+                        Image(systemName: "arrow.clockwise")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+
+                        Picker("", selection: $viewModel.autoRefresh) {
+                            ForEach(RefreshInterval.allCases) { interval in
+                                Text(interval.label).tag(interval)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        .labelsHidden()
+
+                        if viewModel.autoRefresh != .off {
+                            Circle()
+                                .fill(.green)
+                                .frame(width: 6, height: 6)
+                        }
+                    }
+
+                    Spacer()
+
+                    // Follow mode toggle
+                    Toggle(isOn: $viewModel.followMode) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "arrow.down.to.line")
+                                .font(.caption)
+                            Text("Follow")
+                                .font(.caption)
+                        }
+                    }
+                    .toggleStyle(.button)
+                    .buttonStyle(.bordered)
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 8)
+                .background(.ultraThinMaterial)
+
+                // Log content
+                if viewModel.isLoading && viewModel.content.isEmpty {
+                    ProgressView("Loading...")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else if let error = viewModel.error {
+                    VStack(spacing: 12) {
+                        Image(systemName: "exclamationmark.triangle")
+                            .font(.system(size: 40))
+                            .foregroundStyle(.red)
+                        Text("Error")
+                            .font(.headline)
+                        Text(error)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    ScrollViewReader { proxy in
+                        ScrollView {
+                            Text(viewModel.content)
+                                .font(.system(.caption, design: .monospaced))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding()
+                                .id("logContent")
+                        }
+                        .onAppear {
+                            scrollProxy = proxy
+                        }
+                        .onChange(of: viewModel.content) { _, _ in
+                            if viewModel.followMode {
+                                withAnimation {
+                                    proxy.scrollTo("logContent", anchor: .bottom)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            .navigationTitle(fileName)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close") {
+                        viewModel.stopAutoRefresh()
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        Task { await viewModel.loadContent(fileName: fileName) }
+                    } label: {
+                        Image(systemName: "arrow.clockwise")
+                    }
+                }
+            }
+            .task {
+                await viewModel.loadContent(fileName: fileName)
+            }
+            .onChange(of: viewModel.autoRefresh) { _, newValue in
+                if newValue == .off {
+                    viewModel.stopAutoRefresh()
+                } else {
+                    viewModel.startAutoRefresh(fileName: fileName)
+                }
+            }
+            .onDisappear {
+                viewModel.stopAutoRefresh()
+            }
+        }
+    }
 }
 
 #Preview("Logs View") {

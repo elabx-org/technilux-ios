@@ -17,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.6.0</string>
+	<string>2.7.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -73,5 +73,48 @@
 	</array>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
+	<key>UIApplicationShortcutItems</key>
+	<array>
+		<dict>
+			<key>UIApplicationShortcutItemType</key>
+			<string>com.technilux.toggleBlocking</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Toggle Blocking</string>
+			<key>UIApplicationShortcutItemSubtitle</key>
+			<string>Enable or disable DNS blocking</string>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>shield.checkmark</string>
+		</dict>
+		<dict>
+			<key>UIApplicationShortcutItemType</key>
+			<string>com.technilux.quickDisable</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Disable 5 Minutes</string>
+			<key>UIApplicationShortcutItemSubtitle</key>
+			<string>Temporarily disable blocking</string>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>clock.badge.xmark</string>
+		</dict>
+		<dict>
+			<key>UIApplicationShortcutItemType</key>
+			<string>com.technilux.dashboard</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Dashboard</string>
+			<key>UIApplicationShortcutItemSubtitle</key>
+			<string>View DNS statistics</string>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>chart.bar</string>
+		</dict>
+		<dict>
+			<key>UIApplicationShortcutItemType</key>
+			<string>com.technilux.logs</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Query Logs</string>
+			<key>UIApplicationShortcutItemSubtitle</key>
+			<string>View DNS query logs</string>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>doc.text</string>
+		</dict>
+	</array>
 </dict>
 </plist>

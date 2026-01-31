@@ -1,5 +1,98 @@
 import WidgetKit
 import SwiftUI
+import AppIntents
+
+// MARK: - App Intents for Interactive Widgets
+
+@available(iOS 16.0, *)
+struct ToggleBlockingIntent: AppIntent {
+    static var title: LocalizedStringResource = "Toggle DNS Blocking"
+    static var description = IntentDescription("Enables or disables DNS ad blocking")
+    static var openAppWhenRun: Bool = false
+
+    func perform() async throws -> some IntentResult {
+        if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.technilux.app") {
+            let request: [String: Any] = ["action": "toggle", "timestamp": Date().timeIntervalSince1970]
+            if let data = try? JSONSerialization.data(withJSONObject: request) {
+                try? data.write(to: containerURL.appendingPathComponent("blocking_action.json"))
+            }
+        }
+        WidgetCenter.shared.reloadAllTimelines()
+        return .result()
+    }
+}
+
+@available(iOS 16.0, *)
+struct EnableBlockingIntent: AppIntent {
+    static var title: LocalizedStringResource = "Enable DNS Blocking"
+    static var description = IntentDescription("Enables DNS ad blocking")
+    static var openAppWhenRun: Bool = false
+
+    func perform() async throws -> some IntentResult {
+        if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.technilux.app") {
+            let request: [String: Any] = ["action": "enable", "timestamp": Date().timeIntervalSince1970]
+            if let data = try? JSONSerialization.data(withJSONObject: request) {
+                try? data.write(to: containerURL.appendingPathComponent("blocking_action.json"))
+            }
+        }
+        WidgetCenter.shared.reloadAllTimelines()
+        return .result()
+    }
+}
+
+@available(iOS 16.0, *)
+struct Disable5MinutesIntent: AppIntent {
+    static var title: LocalizedStringResource = "Disable Blocking 5 Minutes"
+    static var description = IntentDescription("Temporarily disables DNS blocking for 5 minutes")
+    static var openAppWhenRun: Bool = false
+
+    func perform() async throws -> some IntentResult {
+        if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.technilux.app") {
+            let request: [String: Any] = ["action": "disable", "minutes": 5, "timestamp": Date().timeIntervalSince1970]
+            if let data = try? JSONSerialization.data(withJSONObject: request) {
+                try? data.write(to: containerURL.appendingPathComponent("blocking_action.json"))
+            }
+        }
+        WidgetCenter.shared.reloadAllTimelines()
+        return .result()
+    }
+}
+
+@available(iOS 16.0, *)
+struct Disable15MinutesIntent: AppIntent {
+    static var title: LocalizedStringResource = "Disable Blocking 15 Minutes"
+    static var description = IntentDescription("Temporarily disables DNS blocking for 15 minutes")
+    static var openAppWhenRun: Bool = false
+
+    func perform() async throws -> some IntentResult {
+        if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.technilux.app") {
+            let request: [String: Any] = ["action": "disable", "minutes": 15, "timestamp": Date().timeIntervalSince1970]
+            if let data = try? JSONSerialization.data(withJSONObject: request) {
+                try? data.write(to: containerURL.appendingPathComponent("blocking_action.json"))
+            }
+        }
+        WidgetCenter.shared.reloadAllTimelines()
+        return .result()
+    }
+}
+
+@available(iOS 16.0, *)
+struct Disable30MinutesIntent: AppIntent {
+    static var title: LocalizedStringResource = "Disable Blocking 30 Minutes"
+    static var description = IntentDescription("Temporarily disables DNS blocking for 30 minutes")
+    static var openAppWhenRun: Bool = false
+
+    func perform() async throws -> some IntentResult {
+        if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.technilux.app") {
+            let request: [String: Any] = ["action": "disable", "minutes": 30, "timestamp": Date().timeIntervalSince1970]
+            if let data = try? JSONSerialization.data(withJSONObject: request) {
+                try? data.write(to: containerURL.appendingPathComponent("blocking_action.json"))
+            }
+        }
+        WidgetCenter.shared.reloadAllTimelines()
+        return .result()
+    }
+}
 
 // MARK: - Widget Bundle
 
@@ -398,18 +491,50 @@ struct BlockingWidgetView: View {
     }
 
     private var smallView: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 8) {
             Image(systemName: entry.isEnabled ? "shield.checkmark.fill" : "shield.slash.fill")
-                .font(.system(size: 40))
+                .font(.system(size: 32))
                 .foregroundColor(entry.isEnabled ? .green : .red)
 
             Text(entry.isEnabled ? "Blocking On" : "Blocking Off")
-                .font(.headline)
+                .font(.subheadline)
+                .fontWeight(.semibold)
 
             if let disableEnd = entry.temporaryDisableEnd, disableEnd > Date() {
                 Text("Resumes \(disableEnd, style: .relative)")
-                    .font(.caption)
+                    .font(.caption2)
                     .foregroundColor(.orange)
+            } else {
+                // Interactive buttons (iOS 17+)
+                if #available(iOS 17.0, *) {
+                    HStack(spacing: 8) {
+                        if entry.isEnabled {
+                            Button(intent: Disable5MinutesIntent()) {
+                                Text("5m")
+                                    .font(.caption2)
+                                    .fontWeight(.medium)
+                            }
+                            .buttonStyle(.bordered)
+                            .tint(.orange)
+
+                            Button(intent: Disable15MinutesIntent()) {
+                                Text("15m")
+                                    .font(.caption2)
+                                    .fontWeight(.medium)
+                            }
+                            .buttonStyle(.bordered)
+                            .tint(.orange)
+                        } else {
+                            Button(intent: EnableBlockingIntent()) {
+                                Text("Enable")
+                                    .font(.caption2)
+                                    .fontWeight(.medium)
+                            }
+                            .buttonStyle(.bordered)
+                            .tint(.green)
+                        }
+                    }
+                }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -537,5 +662,149 @@ struct TopDomainsWidgetView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+// MARK: - Blocking Live Activity
+
+@available(iOS 16.2, *)
+struct BlockingActivityAttributes: ActivityAttributes {
+    public struct ContentState: Codable, Hashable {
+        var isEnabled: Bool
+        var disableEndTime: Date?
+        var remainingMinutes: Int
+    }
+
+    var serverName: String
+}
+
+@available(iOS 16.2, *)
+struct BlockingLiveActivity: Widget {
+    var body: some WidgetConfiguration {
+        ActivityConfiguration(for: BlockingActivityAttributes.self) { context in
+            // Lock Screen / Banner UI
+            HStack(spacing: 16) {
+                Image(systemName: context.state.isEnabled ? "shield.checkmark.fill" : "shield.slash.fill")
+                    .font(.title2)
+                    .foregroundColor(context.state.isEnabled ? .green : .red)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(context.state.isEnabled ? "Blocking Active" : "Blocking Disabled")
+                        .font(.headline)
+
+                    if let endTime = context.state.disableEndTime, !context.state.isEnabled {
+                        HStack(spacing: 4) {
+                            Image(systemName: "clock")
+                                .font(.caption2)
+                            Text("Resumes in \(endTime, style: .relative)")
+                                .font(.caption)
+                        }
+                        .foregroundColor(.orange)
+                    } else {
+                        Text("DNS ad blocking is protecting your network")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+
+                Spacer()
+
+                // Progress ring for temporary disable
+                if let endTime = context.state.disableEndTime, !context.state.isEnabled {
+                    ZStack {
+                        Circle()
+                            .stroke(Color.orange.opacity(0.3), lineWidth: 4)
+                        Circle()
+                            .trim(from: 0, to: CGFloat(max(0, min(1, context.state.remainingMinutes)) / 60.0))
+                            .stroke(Color.orange, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                            .rotationEffect(.degrees(-90))
+                        Text("\(context.state.remainingMinutes)")
+                            .font(.caption2)
+                            .fontWeight(.bold)
+                    }
+                    .frame(width: 36, height: 36)
+                }
+            }
+            .padding()
+            .activityBackgroundTint(Color(.systemBackground))
+
+        } dynamicIsland: { context in
+            DynamicIsland {
+                // Expanded UI
+                DynamicIslandExpandedRegion(.leading) {
+                    Image(systemName: context.state.isEnabled ? "shield.checkmark.fill" : "shield.slash.fill")
+                        .font(.title2)
+                        .foregroundColor(context.state.isEnabled ? .green : .red)
+                }
+
+                DynamicIslandExpandedRegion(.center) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(context.state.isEnabled ? "Blocking Active" : "Blocking Paused")
+                            .font(.headline)
+
+                        if let endTime = context.state.disableEndTime, !context.state.isEnabled {
+                            Text("Resumes \(endTime, style: .relative)")
+                                .font(.caption)
+                                .foregroundColor(.orange)
+                        }
+                    }
+                }
+
+                DynamicIslandExpandedRegion(.trailing) {
+                    if let endTime = context.state.disableEndTime, !context.state.isEnabled {
+                        Text(endTime, style: .timer)
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                            .monospacedDigit()
+                            .foregroundColor(.orange)
+                    }
+                }
+
+                DynamicIslandExpandedRegion(.bottom) {
+                    // Quick action buttons
+                    if #available(iOS 17.0, *) {
+                        HStack(spacing: 12) {
+                            if context.state.isEnabled {
+                                Button(intent: Disable5MinutesIntent()) {
+                                    Label("5 min", systemImage: "clock")
+                                }
+                                .buttonStyle(.bordered)
+                                .tint(.orange)
+
+                                Button(intent: Disable15MinutesIntent()) {
+                                    Label("15 min", systemImage: "clock")
+                                }
+                                .buttonStyle(.bordered)
+                                .tint(.orange)
+                            } else {
+                                Button(intent: EnableBlockingIntent()) {
+                                    Label("Enable Now", systemImage: "shield.checkmark")
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .tint(.green)
+                            }
+                        }
+                    }
+                }
+            } compactLeading: {
+                Image(systemName: context.state.isEnabled ? "shield.checkmark.fill" : "shield.slash.fill")
+                    .foregroundColor(context.state.isEnabled ? .green : .red)
+            } compactTrailing: {
+                if let endTime = context.state.disableEndTime, !context.state.isEnabled {
+                    Text(endTime, style: .timer)
+                        .font(.caption2)
+                        .monospacedDigit()
+                        .foregroundColor(.orange)
+                } else {
+                    Text("ON")
+                        .font(.caption2)
+                        .fontWeight(.bold)
+                        .foregroundColor(.green)
+                }
+            } minimal: {
+                Image(systemName: context.state.isEnabled ? "shield.checkmark.fill" : "shield.slash.fill")
+                    .foregroundColor(context.state.isEnabled ? .green : .red)
+            }
+        }
     }
 }

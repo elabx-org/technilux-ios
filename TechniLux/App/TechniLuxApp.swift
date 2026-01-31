@@ -1,7 +1,9 @@
 import SwiftUI
+import UIKit
 
 @main
 struct TechniLuxApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @State private var auth = AuthService.shared
     @State private var isInitializing = true
     @State private var pendingWidgetAction: WidgetAction?
@@ -29,6 +31,12 @@ struct TechniLuxApp: App {
             }
             .onAppear {
                 checkPendingWidgetRequests()
+            }
+            .onChange(of: appDelegate.shortcutAction) { _, action in
+                if let action = action {
+                    handleShortcutAction(action)
+                    appDelegate.shortcutAction = nil
+                }
             }
         }
     }
@@ -72,6 +80,25 @@ struct TechniLuxApp: App {
             pendingWidgetAction = .temporaryDisable(minutes: request.minutes)
             selectedTab = .blocking
         }
+
+        // Check for pending blocking actions from interactive widgets
+        if let blockingAction = WidgetService.shared.checkPendingBlockingAction() {
+            switch blockingAction.action {
+            case "toggle":
+                pendingWidgetAction = .toggleBlocking
+            case "enable":
+                pendingWidgetAction = .enableBlocking
+            case "disable":
+                if let minutes = blockingAction.minutes, minutes > 0 {
+                    pendingWidgetAction = .temporaryDisable(minutes: minutes)
+                } else {
+                    pendingWidgetAction = .disableBlocking
+                }
+            default:
+                break
+            }
+            selectedTab = .blocking
+        }
     }
 
     private func updateWidgetData() async {
@@ -83,6 +110,78 @@ struct TechniLuxApp: App {
             print("Failed to update widget data: \(error)")
         }
     }
+
+    private func handleShortcutAction(_ action: ShortcutAction) {
+        switch action {
+        case .toggleBlocking:
+            selectedTab = .blocking
+            pendingWidgetAction = .toggleBlocking
+        case .quickDisable:
+            selectedTab = .blocking
+            pendingWidgetAction = .temporaryDisable(minutes: 5)
+        case .dashboard:
+            selectedTab = .dashboard
+        case .logs:
+            selectedTab = .more
+            // Will navigate to logs
+        }
+    }
+}
+
+// MARK: - Quick Action Types
+
+enum ShortcutAction: String {
+    case toggleBlocking = "com.technilux.toggleBlocking"
+    case quickDisable = "com.technilux.quickDisable"
+    case dashboard = "com.technilux.dashboard"
+    case logs = "com.technilux.logs"
+}
+
+// MARK: - App Delegate for Quick Actions
+
+class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
+    @Published var shortcutAction: ShortcutAction?
+
+    func application(
+        _ application: UIApplication,
+        configurationForConnecting connectingSceneSession: UISceneSession,
+        options: UIScene.ConnectionOptions
+    ) -> UISceneConfiguration {
+        // Handle shortcut item from cold launch
+        if let shortcutItem = options.shortcutItem,
+           let action = ShortcutAction(rawValue: shortcutItem.type) {
+            shortcutAction = action
+        }
+
+        let configuration = UISceneConfiguration(name: nil, sessionRole: connectingSceneSession.role)
+        configuration.delegateClass = SceneDelegate.self
+        return configuration
+    }
+}
+
+class SceneDelegate: NSObject, UIWindowSceneDelegate {
+    func windowScene(
+        _ windowScene: UIWindowScene,
+        performActionFor shortcutItem: UIApplicationShortcutItem,
+        completionHandler: @escaping (Bool) -> Void
+    ) {
+        // Handle shortcut from warm launch
+        if let action = ShortcutAction(rawValue: shortcutItem.type) {
+            // Post notification for app to handle
+            NotificationCenter.default.post(
+                name: .shortcutActionReceived,
+                object: nil,
+                userInfo: ["action": action]
+            )
+            completionHandler(true)
+        } else {
+            completionHandler(false)
+        }
+    }
+}
+
+extension Notification.Name {
+    static let shortcutActionReceived = Notification.Name("shortcutActionReceived")
 }
 
 /// App tabs for navigation
