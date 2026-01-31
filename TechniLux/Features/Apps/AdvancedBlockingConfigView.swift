@@ -475,6 +475,7 @@ struct AdvancedBlockingConfigView: View {
 
     // MARK: - Groups
 
+    @ViewBuilder
     private var groupsSection: some View {
         Section {
             // Group selector
