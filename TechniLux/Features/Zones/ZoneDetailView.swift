@@ -355,12 +355,22 @@ struct ZoneDetailView: View {
                 await viewModel.loadData()
             }
         }
-        .sheet(isPresented: $showAddSheet) {
+        .sheet(isPresented: $showAddSheet, onDismiss: {
+            // Force refresh when sheet closes to ensure new records appear
+            Task {
+                await viewModel.loadData()
+            }
+        }) {
             AddRecordSheet(zoneName: zoneName) { domain, type, ttl, recordData in
                 try await viewModel.addRecord(domain: domain, type: type, ttl: ttl, recordData: recordData)
             }
         }
-        .sheet(item: $recordToEdit) { record in
+        .sheet(item: $recordToEdit, onDismiss: {
+            // Force refresh when sheet closes to ensure changes appear
+            Task {
+                await viewModel.loadData()
+            }
+        }) { record in
             EditRecordSheet(zoneName: zoneName, record: record) { original, newDomain, ttl, recordData, disable in
                 try await viewModel.updateRecord(original: original, newDomain: newDomain, ttl: ttl, recordData: recordData, disable: disable)
             }

@@ -477,34 +477,26 @@ struct AdvancedBlockingConfigView: View {
 
     private var groupsSection: some View {
         Section {
-            // Group tabs
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(Array(viewModel.config.groups.enumerated()), id: \.element.id) { index, group in
-                        Button {
-                            viewModel.activeGroupIndex = index
-                        } label: {
-                            Text(group.name)
-                                .font(.subheadline)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 6)
-                                .background(viewModel.activeGroupIndex == index ? Color.techniluxPrimary : Color.secondary.opacity(0.2))
-                                .foregroundStyle(viewModel.activeGroupIndex == index ? .white : .primary)
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                        }
-                    }
-
-                    Button {
-                        viewModel.addGroup()
-                    } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .foregroundStyle(.techniluxPrimary)
+            // Group picker - more reliable than custom buttons
+            HStack {
+                Picker("Group", selection: $viewModel.activeGroupIndex) {
+                    ForEach(Array(viewModel.config.groups.enumerated()), id: \.offset) { index, group in
+                        Text(group.name).tag(index)
                     }
                 }
-                .padding(.vertical, 4)
+                .pickerStyle(.menu)
+
+                Button {
+                    viewModel.addGroup()
+                } label: {
+                    Image(systemName: "plus.circle.fill")
+                        .font(.title2)
+                        .foregroundStyle(.techniluxPrimary)
+                }
+                .buttonStyle(.plain)
             }
 
-            if let group = viewModel.currentGroup {
+            if viewModel.activeGroupIndex < viewModel.config.groups.count {
                 GroupConfigView(
                     group: Binding(
                         get: { viewModel.config.groups[viewModel.activeGroupIndex] },
