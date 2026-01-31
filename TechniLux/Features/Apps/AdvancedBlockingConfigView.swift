@@ -610,17 +610,11 @@ struct GroupConfigContent: View {
         ))
         .font(.subheadline)
 
-        // Enable Blocking toggle - uses explicit groupIndex
-        Toggle("Enable Blocking", isOn: Binding(
-            get: { viewModel.config.groups[groupIndex].enableBlocking },
-            set: { viewModel.setGroupEnableBlocking(at: groupIndex, to: $0) }
-        ))
+        // Enable Blocking toggle - direct binding
+        Toggle("Enable Blocking", isOn: $viewModel.config.groups[groupIndex].enableBlocking)
 
-        // Block as NxDomain toggle
-        Toggle("Block as NxDomain", isOn: Binding(
-            get: { viewModel.config.groups[groupIndex].blockAsNxDomain },
-            set: { viewModel.setGroupBlockAsNxDomain(at: groupIndex, to: $0) }
-        ))
+        // Block as NxDomain toggle - direct binding
+        Toggle("Block as NxDomain", isOn: $viewModel.config.groups[groupIndex].blockAsNxDomain)
 
         // Group actions
         HStack {
