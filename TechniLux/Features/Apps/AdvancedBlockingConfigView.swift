@@ -117,20 +117,7 @@ enum StringOrArray: Codable, Equatable {
 @Observable
 final class AdvancedBlockingViewModel {
     var config: AdvancedBlockingConfig
-    var selectedGroupName: String = "default"
     var error: String?
-
-    // Computed index from name - stable even when group properties change
-    var activeGroupIndex: Int {
-        get {
-            config.groups.firstIndex { $0.name == selectedGroupName } ?? 0
-        }
-        set {
-            if newValue < config.groups.count {
-                selectedGroupName = config.groups[newValue].name
-            }
-        }
-    }
 
     // Dialog states
     var showNetworkMappingSheet = false
@@ -156,16 +143,18 @@ final class AdvancedBlockingViewModel {
         if let data = configJson.data(using: .utf8),
            let parsed = try? JSONDecoder().decode(AdvancedBlockingConfig.self, from: data) {
             self.config = parsed
-            // Set initial selected group name
-            self.selectedGroupName = parsed.groups.first?.name ?? "default"
             // Migrate networkGroupMap to networkMappings if needed
             if config.networkMappings == nil || config.networkMappings!.isEmpty {
                 migrateNetworkGroupMap()
             }
         } else {
             self.config = .default
-            self.selectedGroupName = "default"
         }
+    }
+
+    /// Get initial group name for view's @State
+    var initialGroupName: String {
+        config.groups.first?.name ?? "default"
     }
 
     private func migrateNetworkGroupMap() {
@@ -197,12 +186,8 @@ final class AdvancedBlockingViewModel {
         }
     }
 
-    var currentGroup: BlockingGroup? {
-        guard activeGroupIndex < config.groups.count else { return nil }
-        return config.groups[activeGroupIndex]
-    }
-
-    func addGroup() {
+    /// Add a new group and return its name
+    func addGroup() -> String {
         let newGroup = BlockingGroup(
             name: "group-\(config.groups.count + 1)",
             description: nil,
@@ -221,13 +206,13 @@ final class AdvancedBlockingViewModel {
             adblockListUrls: []
         )
         config.groups.append(newGroup)
-        selectedGroupName = newGroup.name
+        return newGroup.name
     }
 
-    func deleteGroup(at index: Int) {
-        guard config.groups.count > 1 else { return }
+    /// Delete a group and return the name to select next (if the deleted one was selected)
+    func deleteGroup(at index: Int, wasSelectedName: String) -> String? {
+        guard config.groups.count > 1 else { return nil }
         let removedName = config.groups[index].name
-        let wasSelected = (removedName == selectedGroupName)
 
         config.groups.remove(at: index)
 
@@ -239,17 +224,19 @@ final class AdvancedBlockingViewModel {
             config.networkMappings = mappings.filter { !$0.groups.isEmpty }
         }
 
-        // If deleted group was selected, select first group
-        if wasSelected {
-            selectedGroupName = config.groups.first?.name ?? "default"
+        // Return new selection if deleted group was selected
+        if wasSelectedName == removedName {
+            return config.groups.first?.name ?? "default"
         }
+        return nil
     }
 
-    func duplicateGroup(at index: Int) {
+    /// Duplicate a group and return the new group's name
+    func duplicateGroup(at index: Int) -> String {
         var copy = config.groups[index]
         copy.name = "\(copy.name)-copy"
         config.groups.append(copy)
-        selectedGroupName = copy.name
+        return copy.name
     }
 
     func renameGroup(at index: Int, to newName: String) {
@@ -265,17 +252,13 @@ final class AdvancedBlockingViewModel {
         }
     }
 
-    // MARK: - Group Property Setters (use activeGroupIndex to avoid stale captures)
+    // MARK: - Group Property Setters (take explicit index)
 
-    func setGroupName(_ name: String) {
-        guard activeGroupIndex < config.groups.count else { return }
-        let oldName = config.groups[activeGroupIndex].name
-        config.groups[activeGroupIndex].name = name
-
-        // Update selectedGroupName to track the renamed group
-        if selectedGroupName == oldName {
-            selectedGroupName = name
-        }
+    /// Set group name and return the new name (for updating view's @State)
+    func setGroupName(at index: Int, to name: String) -> String {
+        guard index < config.groups.count else { return name }
+        let oldName = config.groups[index].name
+        config.groups[index].name = name
 
         // Update mappings
         if var mappings = config.networkMappings {
@@ -284,21 +267,22 @@ final class AdvancedBlockingViewModel {
             }
             config.networkMappings = mappings
         }
+        return name
     }
 
-    func setGroupDescription(_ description: String?) {
-        guard activeGroupIndex < config.groups.count else { return }
-        config.groups[activeGroupIndex].description = description
+    func setGroupDescription(at index: Int, to description: String?) {
+        guard index < config.groups.count else { return }
+        config.groups[index].description = description
     }
 
-    func setGroupEnableBlocking(_ enabled: Bool) {
-        guard activeGroupIndex < config.groups.count else { return }
-        config.groups[activeGroupIndex].enableBlocking = enabled
+    func setGroupEnableBlocking(at index: Int, to enabled: Bool) {
+        guard index < config.groups.count else { return }
+        config.groups[index].enableBlocking = enabled
     }
 
-    func setGroupBlockAsNxDomain(_ value: Bool) {
-        guard activeGroupIndex < config.groups.count else { return }
-        config.groups[activeGroupIndex].blockAsNxDomain = value
+    func setGroupBlockAsNxDomain(at index: Int, to value: Bool) {
+        guard index < config.groups.count else { return }
+        config.groups[index].blockAsNxDomain = value
     }
 
     // Network mapping
@@ -418,6 +402,9 @@ final class AdvancedBlockingViewModel {
 struct AdvancedBlockingConfigView: View {
     @Bindable var viewModel: AdvancedBlockingViewModel
     @State private var isSaving = false
+    // Selection state is @State in view, NOT in @Observable viewModel
+    // This isolates it from observation-triggered re-renders
+    @State private var selectedGroupName: String = ""
 
     var body: some View {
         NavigationStack {
@@ -453,7 +440,18 @@ struct AdvancedBlockingConfigView: View {
             .sheet(isPresented: $viewModel.showNetworkMappingSheet) {
                 NetworkMappingSheet(viewModel: viewModel)
             }
+            .onAppear {
+                // Initialize selection state from viewModel
+                if selectedGroupName.isEmpty {
+                    selectedGroupName = viewModel.initialGroupName
+                }
+            }
         }
+    }
+
+    // Helper to get current group index from name
+    private var selectedGroupIndex: Int {
+        viewModel.config.groups.firstIndex { $0.name == selectedGroupName } ?? 0
     }
 
     // MARK: - Global Settings
@@ -540,15 +538,16 @@ struct AdvancedBlockingConfigView: View {
                         .foregroundStyle(.secondary)
                     Spacer()
                     Button {
-                        viewModel.addGroup()
+                        let newName = viewModel.addGroup()
+                        selectedGroupName = newName
                     } label: {
                         Label("Add Group", systemImage: "plus.circle.fill")
                             .font(.subheadline)
                     }
                 }
 
-                // Use menu picker with group name as selection - stable identity
-                Picker("Group", selection: $viewModel.selectedGroupName) {
+                // Picker uses view's @State, completely isolated from @Observable
+                Picker("Group", selection: $selectedGroupName) {
                     ForEach(viewModel.config.groups, id: \.name) { group in
                         Text(group.name)
                             .tag(group.name)
@@ -566,19 +565,25 @@ struct AdvancedBlockingConfigView: View {
             }
         }
 
-        // Separate section for group config - avoids state issues
-        if viewModel.activeGroupIndex < viewModel.config.groups.count {
-            Section("Group: \(viewModel.config.groups[viewModel.activeGroupIndex].name)") {
-                GroupConfigContent(viewModel: viewModel)
+        // Separate section for group config
+        if selectedGroupIndex < viewModel.config.groups.count {
+            Section("Group: \(viewModel.config.groups[selectedGroupIndex].name)") {
+                GroupConfigContent(
+                    viewModel: viewModel,
+                    groupIndex: selectedGroupIndex,
+                    selectedGroupName: $selectedGroupName
+                )
             }
         }
     }
 }
 
-// MARK: - Group Config Content (uses viewModel.activeGroupIndex directly)
+// MARK: - Group Config Content (uses explicit index parameter)
 
 struct GroupConfigContent: View {
     @Bindable var viewModel: AdvancedBlockingViewModel
+    let groupIndex: Int
+    @Binding var selectedGroupName: String
 
     @State private var newAllowed = ""
     @State private var newBlocked = ""
@@ -589,12 +594,9 @@ struct GroupConfigContent: View {
     @State private var newAdblockUrl = ""
     @State private var newBlockingAddress = ""
 
-    // Always use current activeGroupIndex from viewModel
-    private var idx: Int { viewModel.activeGroupIndex }
-
     private var group: BlockingGroup? {
-        guard idx < viewModel.config.groups.count else { return nil }
-        return viewModel.config.groups[idx]
+        guard groupIndex < viewModel.config.groups.count else { return nil }
+        return viewModel.config.groups[groupIndex]
     }
 
     var body: some View {
@@ -605,35 +607,38 @@ struct GroupConfigContent: View {
 
     @ViewBuilder
     private func groupContent(_ group: BlockingGroup) -> some View {
-        // Group name - use viewModel method
+        // Group name
         TextField("Group Name", text: Binding(
-            get: { viewModel.config.groups[viewModel.activeGroupIndex].name },
-            set: { viewModel.setGroupName($0) }
+            get: { viewModel.config.groups[groupIndex].name },
+            set: { newName in
+                selectedGroupName = viewModel.setGroupName(at: groupIndex, to: newName)
+            }
         ))
 
         // Description
         TextField("Description (optional)", text: Binding(
-            get: { viewModel.config.groups[viewModel.activeGroupIndex].description ?? "" },
-            set: { viewModel.setGroupDescription($0.isEmpty ? nil : $0) }
+            get: { viewModel.config.groups[groupIndex].description ?? "" },
+            set: { viewModel.setGroupDescription(at: groupIndex, to: $0.isEmpty ? nil : $0) }
         ))
         .font(.subheadline)
 
-        // Enable Blocking toggle - use viewModel method to avoid stale index
+        // Enable Blocking toggle - uses explicit groupIndex
         Toggle("Enable Blocking", isOn: Binding(
-            get: { viewModel.config.groups[viewModel.activeGroupIndex].enableBlocking },
-            set: { viewModel.setGroupEnableBlocking($0) }
+            get: { viewModel.config.groups[groupIndex].enableBlocking },
+            set: { viewModel.setGroupEnableBlocking(at: groupIndex, to: $0) }
         ))
 
         // Block as NxDomain toggle
         Toggle("Block as NxDomain", isOn: Binding(
-            get: { viewModel.config.groups[viewModel.activeGroupIndex].blockAsNxDomain },
-            set: { viewModel.setGroupBlockAsNxDomain($0) }
+            get: { viewModel.config.groups[groupIndex].blockAsNxDomain },
+            set: { viewModel.setGroupBlockAsNxDomain(at: groupIndex, to: $0) }
         ))
 
         // Group actions
         HStack {
             Button {
-                viewModel.duplicateGroup(at: viewModel.activeGroupIndex)
+                let newName = viewModel.duplicateGroup(at: groupIndex)
+                selectedGroupName = newName
             } label: {
                 Label("Duplicate", systemImage: "doc.on.doc")
                     .font(.caption)
@@ -643,7 +648,9 @@ struct GroupConfigContent: View {
 
             if viewModel.config.groups.count > 1 {
                 Button(role: .destructive) {
-                    viewModel.deleteGroup(at: viewModel.activeGroupIndex)
+                    if let newSelection = viewModel.deleteGroup(at: groupIndex, wasSelectedName: selectedGroupName) {
+                        selectedGroupName = newSelection
+                    }
                 } label: {
                     Label("Delete", systemImage: "trash")
                         .font(.caption)
@@ -729,8 +736,8 @@ struct GroupConfigContent: View {
     @ViewBuilder
     private func listEditor(keyPath: WritableKeyPath<BlockingGroup, [String]>, newItem: Binding<String>, placeholder: String, suggestions: [String]? = nil) -> some View {
         let items = Binding(
-            get: { viewModel.config.groups[viewModel.activeGroupIndex][keyPath: keyPath] },
-            set: { viewModel.config.groups[viewModel.activeGroupIndex][keyPath: keyPath] = $0 }
+            get: { viewModel.config.groups[groupIndex][keyPath: keyPath] },
+            set: { viewModel.config.groups[groupIndex][keyPath: keyPath] = $0 }
         )
 
         HStack {
