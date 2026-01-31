@@ -45,6 +45,7 @@
 		8A1B2C3D4E5F601D /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F701D; };
 		8A1B2C3D4E5F601E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F701E; };
 		8A1B2C3D4E5F6035 /* WidgetService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7035; };
+		8A1B2C3D4E5F6036 /* AppBlockingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7036; };
 		8A1B2C3D4E5F6040 /* TechniLuxWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7040; };
 		8A1B2C3D4E5F6041 /* BlockingLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7041; };
 		8A1B2C3D4E5F6042 /* AppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1B2C3D4E5F7042; };
@@ -95,6 +96,7 @@
 		8A1B2C3D4E5F701F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8A1B2C3D4E5F7020 /* TechniLux.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TechniLux.entitlements; sourceTree = "<group>"; };
 		8A1B2C3D4E5F7035 /* WidgetService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetService.swift; sourceTree = "<group>"; };
+		8A1B2C3D4E5F7036 /* AppBlockingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppBlockingService.swift; sourceTree = "<group>"; };
 		8A1B2C3D4E5F7040 /* TechniLuxWidgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TechniLuxWidgets.swift; sourceTree = "<group>"; };
 		8A1B2C3D4E5F7041 /* BlockingLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockingLiveActivity.swift; sourceTree = "<group>"; };
 		8A1B2C3D4E5F7042 /* AppIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIntents.swift; sourceTree = "<group>"; };
@@ -235,6 +237,7 @@
 				8A1B2C3D4E5F7007 /* ClusterService.swift */,
 				8A1B2C3D4E5F7008 /* KeychainService.swift */,
 				8A1B2C3D4E5F7035 /* WidgetService.swift */,
+				8A1B2C3D4E5F7036 /* AppBlockingService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -580,6 +583,7 @@
 				8A1B2C3D4E5F601C /* ProfileView.swift in Sources */,
 				8A1B2C3D4E5F601D /* AboutView.swift in Sources */,
 				8A1B2C3D4E5F6035 /* WidgetService.swift in Sources */,
+				8A1B2C3D4E5F6036 /* AppBlockingService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

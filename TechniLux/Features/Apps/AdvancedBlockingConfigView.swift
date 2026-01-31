@@ -477,25 +477,43 @@ struct AdvancedBlockingConfigView: View {
 
     private var groupsSection: some View {
         Section {
-            // Group picker - more reliable than custom buttons
-            HStack {
-                Picker("Group", selection: $viewModel.activeGroupIndex) {
-                    ForEach(Array(viewModel.config.groups.enumerated()), id: \.offset) { index, group in
-                        Text(group.name).tag(index)
+            // Group selector with segmented control for better UX
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Text("Active Group")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    Button {
+                        viewModel.addGroup()
+                    } label: {
+                        Label("Add Group", systemImage: "plus.circle.fill")
+                            .font(.subheadline)
                     }
                 }
-                .pickerStyle(.menu)
 
-                Button {
-                    viewModel.addGroup()
-                } label: {
-                    Image(systemName: "plus.circle.fill")
-                        .font(.title2)
-                        .foregroundStyle(.techniluxPrimary)
+                // Use segmented picker for better touch handling
+                if viewModel.config.groups.count <= 4 {
+                    Picker("Group", selection: $viewModel.activeGroupIndex) {
+                        ForEach(0..<viewModel.config.groups.count, id: \.self) { index in
+                            Text(viewModel.config.groups[index].name)
+                                .tag(index)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                } else {
+                    // Fall back to menu for many groups
+                    Picker("Group", selection: $viewModel.activeGroupIndex) {
+                        ForEach(0..<viewModel.config.groups.count, id: \.self) { index in
+                            Text(viewModel.config.groups[index].name)
+                                .tag(index)
+                        }
+                    }
+                    .pickerStyle(.menu)
                 }
-                .buttonStyle(.plain)
             }
 
+            // Group config - use a separate view with animation
             if viewModel.activeGroupIndex < viewModel.config.groups.count {
                 GroupConfigView(
                     group: Binding(
@@ -505,7 +523,8 @@ struct AdvancedBlockingConfigView: View {
                     viewModel: viewModel,
                     groupIndex: viewModel.activeGroupIndex
                 )
-                .id(viewModel.activeGroupIndex) // Force recreation when switching groups
+                .id("group-\(viewModel.activeGroupIndex)") // Force recreation when switching groups
+                .transition(.opacity)
             }
         } header: {
             HStack {
@@ -516,6 +535,7 @@ struct AdvancedBlockingConfigView: View {
                     .foregroundStyle(.secondary)
             }
         }
+        .animation(.easeInOut(duration: 0.2), value: viewModel.activeGroupIndex)
     }
 }
 

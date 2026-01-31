@@ -247,7 +247,8 @@ struct BlockingView: View {
                 await viewModel.temporaryDisable(minutes: minutes)
                 startLiveActivity(minutes: minutes)
 
-            case .showBlocking, .showDashboard, .showLogs:
+            case .showBlocking, .showDashboard, .showLogs, .toggleAdvancedBlocking:
+                // These actions are handled elsewhere or not applicable here
                 break
             }
         }
