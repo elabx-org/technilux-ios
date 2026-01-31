@@ -751,9 +751,6 @@ struct LogFileViewerSheet: View {
                                 .padding()
                                 .id("logContent")
                         }
-                        .onAppear {
-                            scrollProxy = proxy
-                        }
                         .onChange(of: viewModel.content) { _, _ in
                             if viewModel.followMode {
                                 withAnimation {
