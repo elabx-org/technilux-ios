@@ -117,8 +117,20 @@ enum StringOrArray: Codable, Equatable {
 @Observable
 final class AdvancedBlockingViewModel {
     var config: AdvancedBlockingConfig
-    var activeGroupIndex: Int = 0
+    var selectedGroupName: String = "default"
     var error: String?
+
+    // Computed index from name - stable even when group properties change
+    var activeGroupIndex: Int {
+        get {
+            config.groups.firstIndex { $0.name == selectedGroupName } ?? 0
+        }
+        set {
+            if newValue < config.groups.count {
+                selectedGroupName = config.groups[newValue].name
+            }
+        }
+    }
 
     // Dialog states
     var showNetworkMappingSheet = false
@@ -144,12 +156,15 @@ final class AdvancedBlockingViewModel {
         if let data = configJson.data(using: .utf8),
            let parsed = try? JSONDecoder().decode(AdvancedBlockingConfig.self, from: data) {
             self.config = parsed
+            // Set initial selected group name
+            self.selectedGroupName = parsed.groups.first?.name ?? "default"
             // Migrate networkGroupMap to networkMappings if needed
             if config.networkMappings == nil || config.networkMappings!.isEmpty {
                 migrateNetworkGroupMap()
             }
         } else {
             self.config = .default
+            self.selectedGroupName = "default"
         }
     }
 
@@ -206,12 +221,14 @@ final class AdvancedBlockingViewModel {
             adblockListUrls: []
         )
         config.groups.append(newGroup)
-        activeGroupIndex = config.groups.count - 1
+        selectedGroupName = newGroup.name
     }
 
     func deleteGroup(at index: Int) {
         guard config.groups.count > 1 else { return }
         let removedName = config.groups[index].name
+        let wasSelected = (removedName == selectedGroupName)
+
         config.groups.remove(at: index)
 
         // Remove from mappings
@@ -222,8 +239,9 @@ final class AdvancedBlockingViewModel {
             config.networkMappings = mappings.filter { !$0.groups.isEmpty }
         }
 
-        if activeGroupIndex >= config.groups.count {
-            activeGroupIndex = config.groups.count - 1
+        // If deleted group was selected, select first group
+        if wasSelected {
+            selectedGroupName = config.groups.first?.name ?? "default"
         }
     }
 
@@ -231,7 +249,7 @@ final class AdvancedBlockingViewModel {
         var copy = config.groups[index]
         copy.name = "\(copy.name)-copy"
         config.groups.append(copy)
-        activeGroupIndex = config.groups.count - 1
+        selectedGroupName = copy.name
     }
 
     func renameGroup(at index: Int, to newName: String) {
@@ -253,6 +271,11 @@ final class AdvancedBlockingViewModel {
         guard activeGroupIndex < config.groups.count else { return }
         let oldName = config.groups[activeGroupIndex].name
         config.groups[activeGroupIndex].name = name
+
+        // Update selectedGroupName to track the renamed group
+        if selectedGroupName == oldName {
+            selectedGroupName = name
+        }
 
         // Update mappings
         if var mappings = config.networkMappings {
@@ -524,11 +547,11 @@ struct AdvancedBlockingConfigView: View {
                     }
                 }
 
-                // Use menu picker - more stable than segmented
-                Picker("Group", selection: $viewModel.activeGroupIndex) {
-                    ForEach(Array(viewModel.config.groups.indices), id: \.self) { index in
-                        Text(viewModel.config.groups[index].name)
-                            .tag(index)
+                // Use menu picker with group name as selection - stable identity
+                Picker("Group", selection: $viewModel.selectedGroupName) {
+                    ForEach(viewModel.config.groups, id: \.name) { group in
+                        Text(group.name)
+                            .tag(group.name)
                     }
                 }
                 .pickerStyle(.menu)
