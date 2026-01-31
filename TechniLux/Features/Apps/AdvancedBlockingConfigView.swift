@@ -477,7 +477,7 @@ struct AdvancedBlockingConfigView: View {
 
     private var groupsSection: some View {
         Section {
-            // Group selector with segmented control for better UX
+            // Group selector
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     Text("Active Group")
@@ -492,39 +492,14 @@ struct AdvancedBlockingConfigView: View {
                     }
                 }
 
-                // Use segmented picker for better touch handling
-                if viewModel.config.groups.count <= 4 {
-                    Picker("Group", selection: $viewModel.activeGroupIndex) {
-                        ForEach(0..<viewModel.config.groups.count, id: \.self) { index in
-                            Text(viewModel.config.groups[index].name)
-                                .tag(index)
-                        }
+                // Use menu picker - more stable than segmented
+                Picker("Group", selection: $viewModel.activeGroupIndex) {
+                    ForEach(Array(viewModel.config.groups.indices), id: \.self) { index in
+                        Text(viewModel.config.groups[index].name)
+                            .tag(index)
                     }
-                    .pickerStyle(.segmented)
-                } else {
-                    // Fall back to menu for many groups
-                    Picker("Group", selection: $viewModel.activeGroupIndex) {
-                        ForEach(0..<viewModel.config.groups.count, id: \.self) { index in
-                            Text(viewModel.config.groups[index].name)
-                                .tag(index)
-                        }
-                    }
-                    .pickerStyle(.menu)
                 }
-            }
-
-            // Group config - use a separate view with animation
-            if viewModel.activeGroupIndex < viewModel.config.groups.count {
-                GroupConfigView(
-                    group: Binding(
-                        get: { viewModel.config.groups[viewModel.activeGroupIndex] },
-                        set: { viewModel.config.groups[viewModel.activeGroupIndex] = $0 }
-                    ),
-                    viewModel: viewModel,
-                    groupIndex: viewModel.activeGroupIndex
-                )
-                .id("group-\(viewModel.activeGroupIndex)") // Force recreation when switching groups
-                .transition(.opacity)
+                .pickerStyle(.menu)
             }
         } header: {
             HStack {
@@ -535,7 +510,242 @@ struct AdvancedBlockingConfigView: View {
                     .foregroundStyle(.secondary)
             }
         }
-        .animation(.easeInOut(duration: 0.2), value: viewModel.activeGroupIndex)
+
+        // Separate section for group config - avoids state issues
+        if viewModel.activeGroupIndex < viewModel.config.groups.count {
+            Section("Group: \(viewModel.config.groups[viewModel.activeGroupIndex].name)") {
+                GroupConfigContent(viewModel: viewModel, groupIndex: viewModel.activeGroupIndex)
+            }
+        }
+    }
+}
+
+// MARK: - Group Config Content (no bindings, direct mutation)
+
+struct GroupConfigContent: View {
+    @Bindable var viewModel: AdvancedBlockingViewModel
+    let groupIndex: Int
+
+    @State private var newAllowed = ""
+    @State private var newBlocked = ""
+    @State private var newAllowUrl = ""
+    @State private var newBlockUrl = ""
+    @State private var newAllowRegex = ""
+    @State private var newBlockRegex = ""
+    @State private var newAdblockUrl = ""
+    @State private var newBlockingAddress = ""
+
+    private var group: BlockingGroup {
+        viewModel.config.groups[groupIndex]
+    }
+
+    var body: some View {
+        // Group name
+        TextField("Group Name", text: Binding(
+            get: { group.name },
+            set: { newName in
+                viewModel.config.groups[groupIndex].name = newName
+            }
+        ))
+
+        // Description
+        TextField("Description (optional)", text: Binding(
+            get: { group.description ?? "" },
+            set: { viewModel.config.groups[groupIndex].description = $0.isEmpty ? nil : $0 }
+        ))
+        .font(.subheadline)
+
+        // Enable Blocking toggle - direct mutation
+        Toggle("Enable Blocking", isOn: Binding(
+            get: { group.enableBlocking },
+            set: { viewModel.config.groups[groupIndex].enableBlocking = $0 }
+        ))
+
+        // Block as NxDomain toggle
+        Toggle("Block as NxDomain", isOn: Binding(
+            get: { group.blockAsNxDomain },
+            set: { viewModel.config.groups[groupIndex].blockAsNxDomain = $0 }
+        ))
+
+        // Group actions
+        HStack {
+            Button {
+                viewModel.duplicateGroup(at: groupIndex)
+            } label: {
+                Label("Duplicate", systemImage: "doc.on.doc")
+                    .font(.caption)
+            }
+
+            Spacer()
+
+            if viewModel.config.groups.count > 1 {
+                Button(role: .destructive) {
+                    viewModel.deleteGroup(at: groupIndex)
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                        .font(.caption)
+                }
+            }
+        }
+        .buttonStyle(.borderless)
+
+        // Blocking Addresses
+        DisclosureGroup("Blocking Addresses (\(group.blockingAddresses.count))") {
+            listEditor(
+                items: Binding(
+                    get: { group.blockingAddresses },
+                    set: { viewModel.config.groups[groupIndex].blockingAddresses = $0 }
+                ),
+                newItem: $newBlockingAddress,
+                placeholder: "0.0.0.0 or ::",
+                suggestions: ["0.0.0.0", "::", "127.0.0.1"]
+            )
+        }
+
+        // Allowed Domains
+        DisclosureGroup("Allowed Domains (\(group.allowed.count))") {
+            listEditor(
+                items: Binding(
+                    get: { group.allowed },
+                    set: { viewModel.config.groups[groupIndex].allowed = $0 }
+                ),
+                newItem: $newAllowed,
+                placeholder: "domain.com"
+            )
+        }
+
+        // Blocked Domains
+        DisclosureGroup("Blocked Domains (\(group.blocked.count))") {
+            listEditor(
+                items: Binding(
+                    get: { group.blocked },
+                    set: { viewModel.config.groups[groupIndex].blocked = $0 }
+                ),
+                newItem: $newBlocked,
+                placeholder: "domain.com"
+            )
+        }
+
+        // Allow List URLs
+        DisclosureGroup("Allow List URLs (\(group.allowListUrls.count))") {
+            listEditor(
+                items: Binding(
+                    get: { group.allowListUrls },
+                    set: { viewModel.config.groups[groupIndex].allowListUrls = $0 }
+                ),
+                newItem: $newAllowUrl,
+                placeholder: "https://..."
+            )
+        }
+
+        // Block List URLs
+        DisclosureGroup("Block List URLs (\(group.blockListUrls.count))") {
+            listEditor(
+                items: Binding(
+                    get: { group.blockListUrls },
+                    set: { viewModel.config.groups[groupIndex].blockListUrls = $0 }
+                ),
+                newItem: $newBlockUrl,
+                placeholder: "https://..."
+            )
+        }
+
+        // Allowed Regex
+        DisclosureGroup("Allowed Regex (\(group.allowedRegex.count))") {
+            listEditor(
+                items: Binding(
+                    get: { group.allowedRegex },
+                    set: { viewModel.config.groups[groupIndex].allowedRegex = $0 }
+                ),
+                newItem: $newAllowRegex,
+                placeholder: "regex pattern"
+            )
+        }
+
+        // Blocked Regex
+        DisclosureGroup("Blocked Regex (\(group.blockedRegex.count))") {
+            listEditor(
+                items: Binding(
+                    get: { group.blockedRegex },
+                    set: { viewModel.config.groups[groupIndex].blockedRegex = $0 }
+                ),
+                newItem: $newBlockRegex,
+                placeholder: "regex pattern"
+            )
+        }
+
+        // Adblock List URLs
+        DisclosureGroup("Adblock List URLs (\(group.adblockListUrls.count))") {
+            listEditor(
+                items: Binding(
+                    get: { group.adblockListUrls },
+                    set: { viewModel.config.groups[groupIndex].adblockListUrls = $0 }
+                ),
+                newItem: $newAdblockUrl,
+                placeholder: "https://..."
+            )
+        }
+    }
+
+    @ViewBuilder
+    private func listEditor(items: Binding<[String]>, newItem: Binding<String>, placeholder: String, suggestions: [String]? = nil) -> some View {
+        HStack {
+            TextField(placeholder, text: newItem)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .onSubmit {
+                    addItem(to: items, from: newItem)
+                }
+            Button("Add") {
+                addItem(to: items, from: newItem)
+            }
+            .disabled(newItem.wrappedValue.isEmpty)
+        }
+
+        if let suggestions = suggestions {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack {
+                    ForEach(suggestions, id: \.self) { suggestion in
+                        Button {
+                            if !items.wrappedValue.contains(suggestion) {
+                                items.wrappedValue.append(suggestion)
+                            }
+                        } label: {
+                            Text(suggestion)
+                                .font(.caption)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(items.wrappedValue.contains(suggestion) ? Color.techniluxPrimary.opacity(0.3) : Color.secondary.opacity(0.2))
+                                .clipShape(RoundedRectangle(cornerRadius: 4))
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(items.wrappedValue.contains(suggestion))
+                    }
+                }
+            }
+        }
+
+        ForEach(Array(items.wrappedValue.enumerated()), id: \.offset) { index, item in
+            HStack {
+                Text(item)
+                    .font(.system(.caption, design: .monospaced))
+                    .lineLimit(1)
+                Spacer()
+                Button {
+                    items.wrappedValue.remove(at: index)
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+    }
+
+    private func addItem(to items: Binding<[String]>, from newItem: Binding<String>) {
+        let trimmed = newItem.wrappedValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, !items.wrappedValue.contains(trimmed) else { return }
+        items.wrappedValue.append(trimmed)
+        newItem.wrappedValue = ""
     }
 }
 
@@ -684,196 +894,6 @@ struct NetworkMappingSheet: View {
                 }
             }
         }
-    }
-}
-
-struct GroupConfigView: View {
-    @Binding var group: BlockingGroup
-    @Bindable var viewModel: AdvancedBlockingViewModel
-    let groupIndex: Int
-
-    @State private var newAllowed = ""
-    @State private var newBlocked = ""
-    @State private var newAllowUrl = ""
-    @State private var newBlockUrl = ""
-    @State private var newAllowRegex = ""
-    @State private var newBlockRegex = ""
-    @State private var newAdblockUrl = ""
-    @State private var newBlockingAddress = ""
-
-    var body: some View {
-        // Group name & settings
-        TextField("Group Name", text: $group.name)
-            .onChange(of: group.name) { oldValue, newValue in
-                if oldValue != newValue {
-                    viewModel.renameGroup(at: groupIndex, to: newValue)
-                }
-            }
-
-        TextField("Description (optional)", text: Binding(
-            get: { group.description ?? "" },
-            set: { group.description = $0.isEmpty ? nil : $0 }
-        ))
-        .font(.subheadline)
-
-        Toggle("Enable Blocking", isOn: $group.enableBlocking)
-        Toggle("Block as NxDomain", isOn: $group.blockAsNxDomain)
-
-        // Group actions
-        HStack {
-            Button {
-                viewModel.duplicateGroup(at: groupIndex)
-            } label: {
-                Label("Duplicate", systemImage: "doc.on.doc")
-                    .font(.caption)
-            }
-
-            Spacer()
-
-            if viewModel.config.groups.count > 1 {
-                Button(role: .destructive) {
-                    viewModel.deleteGroup(at: groupIndex)
-                } label: {
-                    Label("Delete", systemImage: "trash")
-                        .font(.caption)
-                }
-            }
-        }
-        .buttonStyle(.borderless)
-
-        // Blocking Addresses
-        DisclosureGroup("Blocking Addresses (\(group.blockingAddresses.count))") {
-            listEditor(
-                items: $group.blockingAddresses,
-                newItem: $newBlockingAddress,
-                placeholder: "0.0.0.0 or ::",
-                suggestions: ["0.0.0.0", "::", "127.0.0.1"]
-            )
-        }
-
-        // Allowed Domains
-        DisclosureGroup("Allowed Domains (\(group.allowed.count))") {
-            listEditor(
-                items: $group.allowed,
-                newItem: $newAllowed,
-                placeholder: "domain.com"
-            )
-        }
-
-        // Blocked Domains
-        DisclosureGroup("Blocked Domains (\(group.blocked.count))") {
-            listEditor(
-                items: $group.blocked,
-                newItem: $newBlocked,
-                placeholder: "domain.com"
-            )
-        }
-
-        // Allow List URLs
-        DisclosureGroup("Allow List URLs (\(group.allowListUrls.count))") {
-            listEditor(
-                items: $group.allowListUrls,
-                newItem: $newAllowUrl,
-                placeholder: "https://..."
-            )
-        }
-
-        // Block List URLs
-        DisclosureGroup("Block List URLs (\(group.blockListUrls.count))") {
-            listEditor(
-                items: $group.blockListUrls,
-                newItem: $newBlockUrl,
-                placeholder: "https://..."
-            )
-        }
-
-        // Allowed Regex
-        DisclosureGroup("Allowed Regex (\(group.allowedRegex.count))") {
-            listEditor(
-                items: $group.allowedRegex,
-                newItem: $newAllowRegex,
-                placeholder: "regex pattern"
-            )
-        }
-
-        // Blocked Regex
-        DisclosureGroup("Blocked Regex (\(group.blockedRegex.count))") {
-            listEditor(
-                items: $group.blockedRegex,
-                newItem: $newBlockRegex,
-                placeholder: "regex pattern"
-            )
-        }
-
-        // Adblock List URLs
-        DisclosureGroup("Adblock List URLs (\(group.adblockListUrls.count))") {
-            listEditor(
-                items: $group.adblockListUrls,
-                newItem: $newAdblockUrl,
-                placeholder: "https://..."
-            )
-        }
-    }
-
-    @ViewBuilder
-    private func listEditor(items: Binding<[String]>, newItem: Binding<String>, placeholder: String, suggestions: [String]? = nil) -> some View {
-        HStack {
-            TextField(placeholder, text: newItem)
-                .textInputAutocapitalization(.never)
-                .autocorrectionDisabled()
-                .onSubmit {
-                    addItem(to: items, from: newItem)
-                }
-            Button("Add") {
-                addItem(to: items, from: newItem)
-            }
-            .disabled(newItem.wrappedValue.isEmpty)
-        }
-
-        if let suggestions = suggestions {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack {
-                    ForEach(suggestions, id: \.self) { suggestion in
-                        Button {
-                            if !items.wrappedValue.contains(suggestion) {
-                                items.wrappedValue.append(suggestion)
-                            }
-                        } label: {
-                            Text(suggestion)
-                                .font(.caption)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(items.wrappedValue.contains(suggestion) ? Color.techniluxPrimary.opacity(0.3) : Color.secondary.opacity(0.2))
-                                .clipShape(RoundedRectangle(cornerRadius: 4))
-                        }
-                        .buttonStyle(.plain)
-                        .disabled(items.wrappedValue.contains(suggestion))
-                    }
-                }
-            }
-        }
-
-        ForEach(Array(items.wrappedValue.enumerated()), id: \.offset) { index, item in
-            HStack {
-                Text(item)
-                    .font(.system(.caption, design: .monospaced))
-                    .lineLimit(1)
-                Spacer()
-                Button {
-                    items.wrappedValue.remove(at: index)
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(.secondary)
-                }
-            }
-        }
-    }
-
-    private func addItem(to items: Binding<[String]>, from newItem: Binding<String>) {
-        let trimmed = newItem.wrappedValue.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty, !items.wrappedValue.contains(trimmed) else { return }
-        items.wrappedValue.append(trimmed)
-        newItem.wrappedValue = ""
     }
 }
 
