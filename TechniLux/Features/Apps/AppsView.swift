@@ -366,10 +366,21 @@ struct AppDetailView: View {
     @State private var isSaving = false
     @State private var error: String?
     @State private var showJsonEditor = false
+    @State private var showNativeConfig = false
 
     // Check if we have a schema URL for this app
     private var schemaUrl: String? {
         viewModel.storeApps.first { $0.name == app.name }?.schemaUrl
+    }
+
+    // Check if this app has a native config component
+    private var hasNativeConfig: Bool {
+        let name = app.name.lowercased()
+        return name.contains("advanced blocking") || name.contains("advanced forwarding")
+    }
+
+    private var isAdvancedBlocking: Bool {
+        app.name.lowercased().contains("advanced blocking")
     }
 
     var body: some View {
@@ -408,6 +419,33 @@ struct AppDetailView: View {
                 Section("Configuration") {
                     ProgressView("Loading configuration...")
                 }
+            } else if hasNativeConfig && !showJsonEditor {
+                // Native config component for Advanced Blocking/Forwarding
+                Section("Configuration") {
+                    Button {
+                        showNativeConfig = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "slider.horizontal.3")
+                            Text("Open Visual Editor")
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
+
+                    Button {
+                        showJsonEditor = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "chevron.left.forwardslash.chevron.right")
+                            Text("Edit JSON Directly")
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
+                }
             } else if let schema = schema, !showJsonEditor {
                 // Dynamic UI based on schema
                 Section {
@@ -444,7 +482,7 @@ struct AppDetailView: View {
                     HStack {
                         Text("Configuration (JSON)")
                         Spacer()
-                        if schema != nil {
+                        if hasNativeConfig || schema != nil {
                             Button {
                                 // Update configDict from text before switching
                                 if let data = configText.data(using: .utf8),
@@ -484,6 +522,28 @@ struct AppDetailView: View {
         .task {
             await loadConfig()
             await loadSchema()
+        }
+        .fullScreenCover(isPresented: $showNativeConfig) {
+            if isAdvancedBlocking {
+                AdvancedBlockingConfigView(
+                    viewModel: AdvancedBlockingViewModel(
+                        configJson: configText,
+                        appName: app.name,
+                        onSave: { newConfig in
+                            configText = newConfig
+                            await saveConfig()
+                            showNativeConfig = false
+                        },
+                        onCancel: {
+                            showNativeConfig = false
+                        }
+                    )
+                )
+            } else {
+                // Advanced Forwarding - for now show JSON editor
+                // TODO: Add AdvancedForwardingConfigView
+                Text("Advanced Forwarding config not yet implemented")
+            }
         }
     }
 
