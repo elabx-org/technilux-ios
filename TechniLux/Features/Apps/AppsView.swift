@@ -590,9 +590,13 @@ struct AppDetailView: View {
         error = nil
         defer { isSaving = false }
 
-        // If using dynamic UI, convert config dict to JSON
+        // Determine which config to save
+        // - If native config view was used, configText is already updated
+        // - If dynamic schema UI was used, convert configDict to JSON
+        // - If JSON editor was used, configText is already correct
         var configToSave = configText
-        if schema != nil && !showJsonEditor {
+        if schema != nil && !showJsonEditor && !isAdvancedBlocking {
+            // Only use configDict for dynamic schema UI (not native views)
             if let data = try? JSONSerialization.data(withJSONObject: configDict, options: []),
                let jsonString = String(data: data, encoding: .utf8) {
                 configToSave = jsonString
