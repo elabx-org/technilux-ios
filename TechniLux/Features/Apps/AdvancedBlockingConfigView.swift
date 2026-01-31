@@ -573,6 +573,10 @@ struct GroupConfigContent: View {
     let groupIndex: Int
     @Binding var selectedGroupName: String
 
+    // Local state for toggles - synced with config
+    @State private var enableBlocking: Bool = true
+    @State private var blockAsNxDomain: Bool = false
+
     @State private var newAllowed = ""
     @State private var newBlocked = ""
     @State private var newAllowUrl = ""
@@ -590,6 +594,18 @@ struct GroupConfigContent: View {
     var body: some View {
         if let group = group {
             groupContent(group)
+                .onAppear {
+                    // Initialize local state from config
+                    enableBlocking = group.enableBlocking
+                    blockAsNxDomain = group.blockAsNxDomain
+                }
+                .onChange(of: groupIndex) { _, _ in
+                    // Update local state when group changes
+                    if let g = self.group {
+                        enableBlocking = g.enableBlocking
+                        blockAsNxDomain = g.blockAsNxDomain
+                    }
+                }
         }
     }
 
@@ -610,11 +626,17 @@ struct GroupConfigContent: View {
         ))
         .font(.subheadline)
 
-        // Enable Blocking toggle - direct binding
-        Toggle("Enable Blocking", isOn: $viewModel.config.groups[groupIndex].enableBlocking)
+        // Enable Blocking toggle - uses local @State synced to config
+        Toggle("Enable Blocking", isOn: $enableBlocking)
+            .onChange(of: enableBlocking) { _, newValue in
+                viewModel.config.groups[groupIndex].enableBlocking = newValue
+            }
 
-        // Block as NxDomain toggle - direct binding
-        Toggle("Block as NxDomain", isOn: $viewModel.config.groups[groupIndex].blockAsNxDomain)
+        // Block as NxDomain toggle - uses local @State synced to config
+        Toggle("Block as NxDomain", isOn: $blockAsNxDomain)
+            .onChange(of: blockAsNxDomain) { _, newValue in
+                viewModel.config.groups[groupIndex].blockAsNxDomain = newValue
+            }
 
         // Group actions
         HStack {
