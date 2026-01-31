@@ -629,23 +629,17 @@ struct GroupConfigContent: View {
         // Enable Blocking toggle - uses local @State synced to config
         Toggle("Enable Blocking", isOn: $enableBlocking)
             .onChange(of: enableBlocking) { _, newValue in
-                // Find group by name and reassign entire array to trigger observation
-                if let idx = viewModel.config.groups.firstIndex(where: { $0.name == selectedGroupName }) {
-                    var updatedGroups = viewModel.config.groups
-                    updatedGroups[idx].enableBlocking = newValue
-                    viewModel.config.groups = updatedGroups
-                }
+                // Use groupIndex directly - it's passed as parameter and should be valid
+                guard groupIndex < viewModel.config.groups.count else { return }
+                viewModel.config.groups[groupIndex].enableBlocking = newValue
             }
 
         // Block as NxDomain toggle - uses local @State synced to config
         Toggle("Block as NxDomain", isOn: $blockAsNxDomain)
             .onChange(of: blockAsNxDomain) { _, newValue in
-                // Find group by name and reassign entire array to trigger observation
-                if let idx = viewModel.config.groups.firstIndex(where: { $0.name == selectedGroupName }) {
-                    var updatedGroups = viewModel.config.groups
-                    updatedGroups[idx].blockAsNxDomain = newValue
-                    viewModel.config.groups = updatedGroups
-                }
+                // Use groupIndex directly
+                guard groupIndex < viewModel.config.groups.count else { return }
+                viewModel.config.groups[groupIndex].blockAsNxDomain = newValue
             }
 
         // Group actions
