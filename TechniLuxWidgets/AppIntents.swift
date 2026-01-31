@@ -80,6 +80,42 @@ struct RefreshStatsIntent: AppIntent {
     }
 }
 
+// MARK: - Toggle Advanced Blocking Intent
+
+@available(iOS 17.0, *)
+struct ToggleAdvancedBlockingIntent: AppIntent {
+    static var title: LocalizedStringResource = "Toggle Advanced Blocking"
+    static var description = IntentDescription("Toggle the Advanced Blocking app on or off")
+    static var openAppWhenRun: Bool = true
+
+    func perform() async throws -> some IntentResult {
+        // Store the request in shared container for main app to process
+        guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.technilux.app") else {
+            throw IntentError.generic(message: "Unable to access shared container")
+        }
+
+        let action = AppBlockingActionRequest(
+            appName: "Advanced Blocking Plus",
+            action: "toggle",
+            timestamp: Date()
+        )
+
+        let data = try JSONEncoder().encode(action)
+        try data.write(to: containerURL.appendingPathComponent("app_blocking_action.json"))
+
+        // Reload widgets
+        WidgetCenter.shared.reloadAllTimelines()
+
+        return .result()
+    }
+}
+
+struct AppBlockingActionRequest: Codable {
+    let appName: String
+    let action: String
+    let timestamp: Date
+}
+
 // MARK: - Intent Errors
 
 enum IntentError: Error {

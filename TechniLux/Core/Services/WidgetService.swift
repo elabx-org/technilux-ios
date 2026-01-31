@@ -158,6 +158,12 @@ class WidgetService {
             return .showDashboard
         case "domains":
             return .showLogs
+        case "app":
+            // Handle app-specific URLs like technilux://app/advancedblocking/toggle
+            if url.path == "/advancedblocking/toggle" {
+                return .toggleAdvancedBlocking
+            }
+            return nil
         default:
             return nil
         }
@@ -250,6 +256,7 @@ enum WidgetAction: Equatable {
     case showBlocking
     case showDashboard
     case showLogs
+    case toggleAdvancedBlocking
 }
 
 // MARK: - Live Activity Attributes (shared)

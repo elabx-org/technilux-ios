@@ -71,6 +71,11 @@ struct TechniLuxApp: App {
         case .showLogs:
             selectedTab = .more
             // Navigate to logs
+        case .toggleAdvancedBlocking:
+            // Toggle Advanced Blocking in background
+            Task {
+                await toggleAdvancedBlockingApp()
+            }
         }
     }
 
@@ -99,6 +104,22 @@ struct TechniLuxApp: App {
             }
             selectedTab = .blocking
         }
+
+        // Check for pending app blocking actions
+        if let appAction = AppBlockingService.shared.checkPendingAppBlockingAction() {
+            Task {
+                switch appAction.action {
+                case "toggle":
+                    _ = try? await AppBlockingService.shared.toggleAdvancedBlocking(appName: appAction.appName)
+                case "enable":
+                    try? await AppBlockingService.shared.setAdvancedBlocking(appName: appAction.appName, enabled: true)
+                case "disable":
+                    try? await AppBlockingService.shared.setAdvancedBlocking(appName: appAction.appName, enabled: false)
+                default:
+                    break
+                }
+            }
+        }
     }
 
     private func updateWidgetData() async {
@@ -124,6 +145,30 @@ struct TechniLuxApp: App {
         case .logs:
             selectedTab = .more
             // Will navigate to logs
+        case .toggleAdvancedBlocking:
+            // Toggle Advanced Blocking Plus in background
+            Task {
+                await toggleAdvancedBlockingApp()
+            }
+        }
+    }
+
+    private func toggleAdvancedBlockingApp() async {
+        guard auth.isAuthenticated else { return }
+
+        let service = AppBlockingService.shared
+
+        // Find installed Advanced Blocking app
+        guard let appName = await service.getInstalledAdvancedBlockingApp() else {
+            print("Advanced Blocking app not installed")
+            return
+        }
+
+        do {
+            let newState = try await service.toggleAdvancedBlocking(appName: appName)
+            print("Advanced Blocking toggled to: \(newState ? "enabled" : "disabled")")
+        } catch {
+            print("Failed to toggle Advanced Blocking: \(error)")
         }
     }
 }
@@ -135,6 +180,7 @@ enum ShortcutAction: String {
     case quickDisable = "com.technilux.quickDisable"
     case dashboard = "com.technilux.dashboard"
     case logs = "com.technilux.logs"
+    case toggleAdvancedBlocking = "com.technilux.toggleAdvancedBlocking"
 }
 
 // MARK: - App Delegate for Quick Actions

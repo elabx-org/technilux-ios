@@ -115,6 +115,16 @@
 			<key>UIApplicationShortcutItemIconSymbolName</key>
 			<string>doc.text</string>
 		</dict>
+		<dict>
+			<key>UIApplicationShortcutItemType</key>
+			<string>com.technilux.toggleAdvancedBlocking</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Toggle Adv. Blocking</string>
+			<key>UIApplicationShortcutItemSubtitle</key>
+			<string>Enable/disable Advanced Blocking</string>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>hand.raised.slash</string>
+		</dict>
 	</array>
 </dict>
 </plist>

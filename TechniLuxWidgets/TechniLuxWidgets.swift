@@ -9,6 +9,7 @@ struct TechniLuxWidgetBundle: WidgetBundle {
         StatsWidget()
         BlockingControlWidget()
         TopDomainsWidget()
+        AdvancedBlockingWidget()
         if #available(iOS 16.2, *) {
             BlockingLiveActivity()
         }
@@ -537,5 +538,131 @@ struct TopDomainsWidgetView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+// MARK: - Advanced Blocking Widget
+
+struct AppBlockingData: Codable {
+    let appName: String
+    let enabled: Bool
+    let lastUpdated: Date
+
+    static func load() -> AppBlockingData? {
+        guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.technilux.app"),
+              let data = try? Data(contentsOf: containerURL.appendingPathComponent("app_blocking_state.json")) else {
+            return nil
+        }
+        return try? JSONDecoder().decode(AppBlockingData.self, from: data)
+    }
+}
+
+struct AdvancedBlockingWidget: Widget {
+    let kind = "AdvancedBlockingWidget"
+
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: kind, provider: AdvancedBlockingProvider()) { entry in
+            AdvancedBlockingWidgetView(entry: entry)
+        }
+        .configurationDisplayName("Advanced Blocking")
+        .description("Toggle the Advanced Blocking app on or off.")
+        .supportedFamilies([.systemSmall, .accessoryCircular, .accessoryRectangular])
+    }
+}
+
+struct AdvancedBlockingEntry: TimelineEntry {
+    let date: Date
+    let appName: String?
+    let isEnabled: Bool
+}
+
+struct AdvancedBlockingProvider: TimelineProvider {
+    func placeholder(in context: Context) -> AdvancedBlockingEntry {
+        AdvancedBlockingEntry(date: Date(), appName: "Advanced Blocking Plus", isEnabled: true)
+    }
+
+    func getSnapshot(in context: Context, completion: @escaping (AdvancedBlockingEntry) -> Void) {
+        let data = AppBlockingData.load()
+        completion(AdvancedBlockingEntry(
+            date: Date(),
+            appName: data?.appName ?? "Advanced Blocking Plus",
+            isEnabled: data?.enabled ?? true
+        ))
+    }
+
+    func getTimeline(in context: Context, completion: @escaping (Timeline<AdvancedBlockingEntry>) -> Void) {
+        let data = AppBlockingData.load()
+        let entry = AdvancedBlockingEntry(
+            date: Date(),
+            appName: data?.appName ?? "Advanced Blocking Plus",
+            isEnabled: data?.enabled ?? true
+        )
+
+        let nextUpdate = Calendar.current.date(byAdding: .minute, value: 5, to: Date())!
+        let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
+        completion(timeline)
+    }
+}
+
+struct AdvancedBlockingWidgetView: View {
+    var entry: AdvancedBlockingEntry
+    @Environment(\.widgetFamily) var family
+
+    var body: some View {
+        switch family {
+        case .accessoryCircular:
+            accessoryCircularView
+        case .accessoryRectangular:
+            accessoryRectangularView
+        default:
+            smallView
+        }
+    }
+
+    private var smallView: some View {
+        VStack(spacing: 8) {
+            Image(systemName: entry.isEnabled ? "hand.raised.fill" : "hand.raised.slash.fill")
+                .font(.system(size: 36))
+                .foregroundColor(entry.isEnabled ? .techniluxPrimary : .gray)
+
+            Text("Adv. Blocking")
+                .font(.caption)
+                .fontWeight(.semibold)
+
+            Text(entry.isEnabled ? "Enabled" : "Disabled")
+                .font(.headline)
+                .foregroundColor(entry.isEnabled ? .green : .red)
+
+            Text("Tap to toggle")
+                .font(.caption2)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .containerBackground(.fill.tertiary, for: .widget)
+        .widgetURL(URL(string: "technilux://app/advancedblocking/toggle"))
+    }
+
+    private var accessoryCircularView: some View {
+        ZStack {
+            AccessoryWidgetBackground()
+            Image(systemName: entry.isEnabled ? "hand.raised.fill" : "hand.raised.slash.fill")
+                .font(.title2)
+        }
+        .widgetURL(URL(string: "technilux://app/advancedblocking/toggle"))
+    }
+
+    private var accessoryRectangularView: some View {
+        HStack {
+            Image(systemName: entry.isEnabled ? "hand.raised.fill" : "hand.raised.slash.fill")
+                .font(.title2)
+            VStack(alignment: .leading) {
+                Text("Adv. Blocking")
+                    .font(.headline)
+                Text(entry.isEnabled ? "Enabled" : "Disabled")
+                    .font(.caption)
+                    .foregroundColor(entry.isEnabled ? .green : .red)
+            }
+        }
+        .widgetURL(URL(string: "technilux://app/advancedblocking/toggle"))
     }
 }
