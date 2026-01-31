@@ -371,18 +371,6 @@ final class AdvancedBlockingViewModel {
         config.networkMappings = mappings
     }
 
-    // List operations
-    func addToList(_ value: String, keyPath: WritableKeyPath<BlockingGroup, [String]>) {
-        guard !value.isEmpty else { return }
-        let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !config.groups[activeGroupIndex][keyPath: keyPath].contains(trimmed) else { return }
-        config.groups[activeGroupIndex][keyPath: keyPath].append(trimmed)
-    }
-
-    func removeFromList(at index: Int, keyPath: WritableKeyPath<BlockingGroup, [String]>) {
-        config.groups[activeGroupIndex][keyPath: keyPath].remove(at: index)
-    }
-
     func save() async {
         do {
             let encoder = JSONEncoder()
