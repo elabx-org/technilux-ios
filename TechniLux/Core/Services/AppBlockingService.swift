@@ -42,12 +42,13 @@ class AppBlockingService {
     func getAdvancedBlockingEnabled(appName: String) async -> Bool? {
         do {
             let configResponse = try await client.getAppConfig(name: appName, node: cluster.nodeParam)
-            if let configJson = configResponse.config,
-               let data = configJson.data(using: .utf8),
-               let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-               let enableBlocking = json["enableBlocking"] as? Bool {
-                return enableBlocking
+            let configJson = configResponse.config
+            guard let data = configJson.data(using: .utf8),
+                  let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let enableBlocking = json["enableBlocking"] as? Bool else {
+                return nil
             }
+            return enableBlocking
         } catch {
             print("AppBlockingService: Failed to get config: \(error)")
         }
@@ -58,8 +59,8 @@ class AppBlockingService {
     func toggleAdvancedBlocking(appName: String) async throws -> Bool {
         // Get current config
         let configResponse = try await client.getAppConfig(name: appName, node: cluster.nodeParam)
-        guard let configJson = configResponse.config,
-              let data = configJson.data(using: .utf8),
+        let configJson = configResponse.config
+        guard let data = configJson.data(using: .utf8),
               var json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             throw AppBlockingError.invalidConfig
         }
@@ -87,8 +88,8 @@ class AppBlockingService {
     func setAdvancedBlocking(appName: String, enabled: Bool) async throws {
         // Get current config
         let configResponse = try await client.getAppConfig(name: appName, node: cluster.nodeParam)
-        guard let configJson = configResponse.config,
-              let data = configJson.data(using: .utf8),
+        let configJson = configResponse.config
+        guard let data = configJson.data(using: .utf8),
               var json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             throw AppBlockingError.invalidConfig
         }
